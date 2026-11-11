@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+<meta name="theme-color" content="#fff1ba" />
+<title>Taco · Gato · Cabra · Queso · Pizza — Juego táctil</title>
+<style>
+  :root { --ink:#28324b; --paper:#fffaf0; --cream:#fff0be; --sun:#ffca45; --soft:#f4f0e8; --shadow:0 16px 48px rgba(48,47,60,.13); }
+  *, *::before, *::after{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{font-family:ui-rounded,"Trebuchet MS",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#fff4d1;overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  button,input{font:inherit}
+  button{cursor:pointer;touch-action:manipulation}
+  button:focus-visible,input:focus-visible{outline:4px solid #1778e9;outline-offset:3px}
+  button:disabled{cursor:default}
+  .app{height:100vh;height:100dvh;min-height:460px;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(circle at 50% 43%,#fffef8 5%,#fff8e2 45%,#ffe9a1 130%)}
+  .bar{min-height:64px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px clamp(12px,2vw,26px);background:rgba(255,255,255,.8);border-bottom:2px solid rgba(59,54,52,.08);z-index:5}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .brand-mark{width:46px;height:46px;display:grid;place-items:center;background:var(--sun);border-radius:14px;box-shadow:0 4px 0 #efa72f;font-size:25px;transform:rotate(-6deg)}
+  .brand h1{font-size:clamp(15px,1.65vw,24px);line-height:1.05;letter-spacing:.015em;margin:0;font-weight:1000}
+  .brand small{font-size:clamp(10px,.83vw,13px);color:#7c7781;font-weight:700}
+  .bar-actions{display:flex;align-items:center;gap:7px}
+  .tiny-btn{background:#fff;border:2px solid #eae4d9;border-radius:13px;padding:10px 12px;line-height:1;font-size:13px;font-weight:900;color:#39435c;min-height:42px;white-space:nowrap}
+  .tiny-btn:active{transform:scale(.96)}
+  .tiny-btn.on{background:#e9f8f0;border-color:#85cdae}
+  .board{position:relative;flex:1;min-height:0;isolation:isolate}
+  .board::before{content:"";position:absolute;inset:12% 27%;border:3px dashed rgba(222,183,104,.14);border-radius:60px;pointer-events:none}
+  .player-zone{--accent:#ec6773;--lighter:#fff0f1;position:absolute;z-index:3;width:clamp(175px,23.5vw,360px);height:clamp(167px,33%,320px);background:var(--lighter);border:4px solid var(--accent);border-radius:27px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:7px;box-shadow:0 7px 0 color-mix(in srgb,var(--accent) 30%,transparent),0 16px 25px rgba(31,46,67,.07);padding:14px 7px;transition:transform .12s,filter .12s,background .12s;touch-action:none;overflow:hidden}
+  .player-zone::before{content:"";position:absolute;inset:0;opacity:.16;background:radial-gradient(circle at 20% 10%,var(--accent) 0,transparent 36%);pointer-events:none}
+  .player-zone:active{transform:scale(.965)}
+  .player-zone.ready-tap{animation:pulse-border .8s ease-in-out infinite alternate;background:color-mix(in srgb, var(--lighter) 72%, #ffffff)}
+  .player-zone.tapped{filter:saturate(.65);background:#e7f4ed;border-color:#68bb88;box-shadow:0 5px 0 #afd5b6}
+  .player-zone.empty .player-count{background:#e9faf2;color:#00885c}
+  .player-zone .seat{position:absolute;top:10px;left:15px;font-size:11px;font-weight:950;color:var(--accent);text-transform:uppercase;letter-spacing:.08em}
+  .player-name{font-weight:1000;font-size:clamp(18px,2.2vw,29px);line-height:1.05;text-align:center;width:94%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:12px}
+  .player-count{padding:4px 12px;border-radius:999px;background:#fff;border:2px solid color-mix(in srgb,var(--accent) 28%,transparent);font-size:clamp(13px,1.28vw,17px);font-weight:850}
+  .palm{font-size:clamp(34px,5.1vw,67px);line-height:1.06;display:block;filter:drop-shadow(0 3px 0 #fff)}
+  .player-cue{font-weight:1000;text-align:center;letter-spacing:.025em;color:var(--accent);font-size:clamp(13px,1.55vw,20px)}
+  .player-zone[data-seat="0"]{top:6%;left:2%}
+  .player-zone[data-seat="1"]{top:6%;right:2%}
+  .player-zone[data-seat="2"]{bottom:6%;left:2%}
+  .player-zone[data-seat="3"]{bottom:6%;right:2%}
+  .board[data-count="2"] .player-zone[data-seat="0"]{top:50%;transform:translateY(-50%)}
+  .board[data-count="2"] .player-zone[data-seat="1"]{top:50%;transform:translateY(-50%)}
+  .board[data-count="2"] .player-zone:active{transform:translateY(-50%) scale(.965)}
+  .stage{position:absolute;inset:0;margin:auto;z-index:2;width:min(39vw,480px);height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:clamp(5px,1.1vh,13px);text-align:center;pointer-events:none;padding:8px 0}
+  .stage>*{pointer-events:auto}
+  .announcer{border-radius:16px;padding:5px 16px;background:rgba(255,255,255,.83);border:2px solid #efe5cf;box-shadow:0 5px 12px rgba(56,57,69,.05);max-width:100%}
+  .announcer .ann-label{display:block;font-size:clamp(10px,1vw,12px);text-transform:uppercase;letter-spacing:.16em;font-weight:900;color:#89848a}
+  .announcer .ann-word{display:block;font-size:clamp(22px,2.7vw,40px);line-height:1.06;font-weight:1000;color:#26375a}
+  .card-stack{position:relative;width:min(20vw,225px);height:min(31vh,265px);min-width:152px;min-height:180px;margin:6px 0;perspective:800px}
+  .card-stack::before,.card-stack::after{content:"";position:absolute;inset:0;background:#faf5e8;border:3px solid rgba(58,59,80,.09);border-radius:23px;transform:rotate(-8deg) translate(-7px,1px);box-shadow:0 9px 15px rgba(39,44,61,.1)}
+  .card-stack::after{transform:rotate(8deg) translate(8px,3px);background:#fcf1d5}
+  .picture-card{position:absolute;inset:0;z-index:1;border:4px solid rgba(44,40,47,.09);border-radius:23px;box-shadow:0 11px 0 rgba(42,35,31,.12),0 20px 35px rgba(42,35,31,.1);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;background:#fff5cf;overflow:hidden;transition:transform .19s}
+  .picture-card.flip{animation:pop-card .28s cubic-bezier(.2,.95,.31,1.25)}
+  .picture-card::before{content:"";position:absolute;top:-26%;right:-32%;width:70%;height:55%;background:rgba(255,255,255,.29);border-radius:50%}
+  .picture-card .big-emoji{position:relative;font-size:clamp(75px,9vw,118px);line-height:1.1;filter:drop-shadow(0 7px 3px rgba(31,38,53,.12))}
+  .picture-card .card-label{position:relative;margin-top:10px;font-size:clamp(17px,2.1vw,25px);font-weight:1000;letter-spacing:.12em}
+  .picture-card.cover{background:repeating-linear-gradient(45deg,#ffc83e 0 23px,#ffd96c 23px 46px);border-color:#e3ad38}
+  .picture-card.cover .big-emoji{font-size:clamp(70px,7vw,110px)}
+  .picture-card.cover .card-label{font-size:18px}
+  .picture-card[data-type="taco"]{background:#c8f1dc}
+  .picture-card[data-type="gato"]{background:#fff0b7}
+  .picture-card[data-type="cabra"]{background:#c3eaff}
+  .picture-card[data-type="queso"]{background:#e6c9ff}
+  .picture-card[data-type="pizza"]{background:#ffccd5}
+  .picture-card[data-type="gorila"]{background:#e5caaa}
+  .picture-card[data-type="marmota"]{background:#def0a5}
+  .picture-card[data-type="narval"]{background:#bcecf6}
+  .central-count{font-size:clamp(12px,1.06vw,15px);font-weight:900;color:#857880;letter-spacing:.03em}
+  .status{height:44px;display:flex;align-items:center;justify-content:center;font-size:clamp(12px,1.25vw,18px);font-weight:900;line-height:1.2;padding:0 4px;max-width:100%}
+  .status.big{font-size:clamp(16px,1.9vw,27px)}
+  .next-btn{width:min(100%,265px);min-height:56px;border:0;border-radius:20px;color:#342b1b;background:#ffcc43;box-shadow:0 6px 0 #e0a42b,0 11px 20px rgba(68,43,0,.1);font-size:clamp(15px,1.5vw,20px);font-weight:1000;padding:10px 20px}
+  .next-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #e0a42b}
+  .next-btn:disabled{background:#e9e4d7;box-shadow:none;color:#9e978f}
+  .timer{width:min(85%,260px);height:11px;border:2px solid #e3d8cd;background:#fff;border-radius:99px;overflow:hidden;display:none}
+  .timer>div{height:100%;width:100%;background:#f18e53;transition:width .06s linear}
+  .bottom-info{z-index:4;min-height:37px;display:flex;justify-content:center;align-items:center;gap:14px;background:rgba(255,255,255,.65);border-top:2px solid rgba(59,54,52,.06);color:#78737b;font-size:12px;font-weight:750;text-align:center;padding:6px 14px}
+  .chip{background:#fff7e1;border:1px solid #e7d7ad;padding:3px 7px;border-radius:7px;color:#665b55}
+  .overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(28,38,55,.55);backdrop-filter:blur(9px);overflow-y:auto}
+  .overlay.hidden{display:none}
+  .modal{background:#fffdf5;border-radius:30px;border:5px solid white;box-shadow:var(--shadow);padding:clamp(19px,3.5vw,38px);width:min(710px,100%);max-height:95dvh;overflow-y:auto}
+  .modal h2{margin:0 0 10px;font-size:clamp(25px,4.6vw,42px);line-height:1.06;letter-spacing:-.03em;text-align:center}
+  .modal .lead{margin:3px auto 22px;text-align:center;font-size:15px;color:#77717a;max-width:550px;line-height:1.4}
+  .setting-title{margin:15px 0 7px;font-weight:1000;font-size:14px;letter-spacing:.055em;text-transform:uppercase;color:#635b62}
+  .choice-row{display:flex;gap:9px;flex-wrap:wrap}
+  .choice{flex:1;background:#fff;min-width:75px;border:3px solid #e9e5dc;border-radius:16px;padding:12px 7px;font-size:20px;font-weight:1000;color:#55536b}
+  .choice.selected{background:#ffedb4;border-color:#f3b834;color:#453727}
+  .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .field{display:flex;align-items:center;gap:8px;border-radius:14px;background:#f7f6f2;padding:6px 9px;border:2px solid #ece8e1}
+  .field-dot{width:14px;height:14px;border-radius:50%;flex:none}
+  .field input{background:transparent;border:0;padding:8px 3px;min-width:0;width:100%;font-size:16px;font-weight:900;color:#35405a;user-select:text;-webkit-user-select:text}
+  .field input:focus{outline:0}
+  .opts{display:flex;gap:12px;flex-wrap:wrap;margin:15px 0}
+  .switch{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:800;font-size:14px;color:#68646b}
+  .switch input{accent-color:#ea9a2f;width:20px;height:20px}
+  .main-btn{width:100%;font-size:20px;font-weight:1000;padding:16px;background:#ffca4d;border:0;border-radius:17px;color:#433126;box-shadow:0 6px 0 #e5a72a;margin-top:10px}
+  .main-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #e5a72a}
+  .secondary-btn{width:100%;border:2px solid #e5e1d9;background:white;border-radius:16px;padding:12px;font-weight:950;color:#5d5d6f;margin-top:10px}
+  .rules{line-height:1.5;font-size:16px;color:#575a6a}
+  .rules p{margin:10px 0}
+  .rule-specials{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;text-align:center;margin:12px 0}
+  .rule-specials>div{background:#f4f0e9;border-radius:14px;padding:10px 6px;font-size:14px;font-weight:900}
+  .rule-specials b{display:block;font-size:32px}
+  .toast{position:fixed;bottom:58px;left:50%;transform:translateX(-50%) translateY(18px);background:#28334f;color:white;padding:12px 22px;border-radius:15px;z-index:100;font-weight:900;opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;max-width:min(92vw,550px);text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .winner-emoji{font-size:82px;text-align:center;line-height:1.4}
+  .win-title{color:#b87c13}
+  @keyframes pulse-border{to{box-shadow:0 0 0 8px color-mix(in srgb,var(--accent) 25%,transparent),0 12px 22px rgba(31,46,67,.12)}}
+  @keyframes pop-card{from{transform:rotateY(-78deg) scale(.82);opacity:.3}to{transform:rotateY(0) scale(1);opacity:1}}
+  @media(max-width:920px){
+    .brand small{display:none}
+    .tiny-btn{padding:9px 10px}
+    .player-zone{width:clamp(145px,23vw,225px);height:clamp(150px,32%,260px)}
+    .stage{width:43vw}
+    .card-stack{width:min(22vw,195px);height:min(28vh,235px)}
+  }
+  @media(orientation:portrait), (max-width:620px){
+    .app{min-height:0}
+    .bar{min-height:56px;padding:7px 8px}
+    .brand-mark{width:36px;height:36px;font-size:20px;border-radius:11px}
+    .brand{gap:7px}
+    .brand h1{font-size:clamp(12px,3vw,18px);max-width:185px}
+    .tiny-btn{min-height:36px;padding:7px;font-size:12px;border-radius:9px}
+    #fullBtn{display:none}
+    .board::before{display:none}
+    .player-zone{width:47%;height:22%;min-height:102px;max-height:none;border-width:3px;border-radius:17px;padding:6px 3px;gap:1px}
+    .player-zone .seat{font-size:8px;top:5px;left:7px}
+    .player-name{font-size:clamp(13px,3.6vw,24px);margin-top:11px}
+    .player-count{font-size:clamp(10px,2.7vw,15px);padding:1px 7px;border-width:1px}
+    .palm{font-size:clamp(26px,6vw,50px)}
+    .player-cue{font-size:clamp(10px,2.5vw,15px)}
+    .player-zone[data-seat="0"]{top:1%;left:2%}
+    .player-zone[data-seat="1"]{top:1%;right:2%}
+    .player-zone[data-seat="2"]{bottom:1%;left:2%}
+    .player-zone[data-seat="3"]{bottom:1%;right:2%}
+    .board[data-count="2"] .player-zone[data-seat="0"],.board[data-count="2"] .player-zone[data-seat="1"]{top:1%;transform:none}
+    .board[data-count="2"] .player-zone:active{transform:scale(.965)}
+    .stage{top:23%;bottom:23%;height:auto;width:96%;padding:1px 5px;gap:3px}
+    .announcer{padding:2px 10px;border-width:1px}
+    .announcer .ann-label{font-size:9px}
+    .announcer .ann-word{font-size:clamp(20px,4vw,29px)}
+    .card-stack{width:clamp(114px,25vw,185px);height:clamp(122px,19vh,210px);min-width:0;min-height:0;margin:3px 0}
+    .picture-card{border-width:2px;border-radius:14px}
+    .picture-card .big-emoji{font-size:clamp(57px,11vw,92px)}
+    .picture-card .card-label{font-size:clamp(13px,3vw,20px);margin-top:3px}
+    .central-count{font-size:11px}
+    .status{height:auto;min-height:24px;font-size:clamp(11px,2.2vw,14px)}
+    .status.big{font-size:clamp(12px,2.9vw,19px)}
+    .next-btn{min-height:38px;padding:7px 10px;width:min(70%,210px);font-size:clamp(13px,2.8vw,16px);border-radius:11px}
+    .timer{height:8px}
+    .bottom-info{min-height:28px;font-size:10px;padding:3px 6px}
+    .modal{padding:17px}
+  }
+  @media(max-height:590px) and (orientation:landscape){
+    .bar{min-height:51px;padding:4px 10px}
+    .brand-mark{width:37px;height:37px}
+    .bar-actions .tiny-btn{min-height:34px;padding:7px}
+    .player-zone{height:37%;min-height:130px;padding:6px;gap:3px}
+    .player-name{font-size:19px;margin-top:7px}
+    .palm{font-size:41px}
+    .player-cue{font-size:13px}
+    .card-stack{height:min(28vh,175px);min-height:145px;width:min(16vw,154px)}
+    .picture-card .big-emoji{font-size:64px}
+    .picture-card .card-label{font-size:16px;margin-top:2px}
+    .announcer .ann-word{font-size:24px}
+    .status{height:27px;font-size:12px}
+    .next-btn{min-height:38px;font-size:13px;border-radius:12px;padding:7px}
+    .stage{gap:3px}
+    .bottom-info{min-height:28px}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="bar">
+    <div class="brand"><div class="brand-mark">🌮</div><div><h1>TACO · GATO · CABRA · QUESO · PIZZA</h1><small>Versión táctil para jugar en clase · 2 a 4 jugadores</small></div></div>
+    <div class="bar-actions">
+      <button class="tiny-btn" id="rulesBtn" title="Cómo se juega">❔ Reglas</button>
+      <button class="tiny-btn on" id="soundBtn" title="Activar o desactivar sonidos">🔊</button>
+      <button class="tiny-btn" id="fullBtn" title="Pantalla completa">⛶ Pantalla</button>
+      <button class="tiny-btn" id="restartBtn" title="Nueva partida">↻ Nueva</button>
+    </div>
+  </header>
+  <main class="board" id="board" data-count="4">
+    <div id="playerZones"></div>
+    <section class="stage" aria-label="Mazo central">
+      <div class="announcer"><span class="ann-label">PALABRA DE ESTE TURNO</span><span class="ann-word" id="spokenWord">¿PREPARADOS?</span></div>
+      <div class="card-stack" aria-live="polite">
+        <div class="picture-card cover" id="pictureCard"><span class="big-emoji" id="cardEmoji">🌮</span><span class="card-label" id="cardLabel">¡A JUGAR!</span></div>
+      </div>
+      <div class="central-count" id="pileCount">Montón: 0 cartas</div>
+      <div class="status" id="status">Saca la primera carta</div>
+      <div class="timer" id="timer"><div id="timerFill"></div></div>
+      <button class="next-btn" id="nextBtn">SACAR CARTA ▶</button>
+    </section>
+  </main>
+  <footer class="bottom-info"><span id="turnNote">Cada niño pulsa su propia zona cuando haya coincidencia.</span><span class="chip" id="modeNote">Manual</span></footer>
+</div>
+
+<div class="overlay" id="setupOverlay" role="dialog" aria-modal="true" aria-label="Preparar partida">
+  <div class="modal">
+    <h2>🌮 ¡A jugar!</h2>
+    <p class="lead">Una versión para la pantalla táctil. Cada niño tendrá un botón gigante con su nombre y su montón de cartas.</p>
+    <div class="setting-title">¿Cuántos niños juegan?</div>
+    <div class="choice-row" id="countChoices">
+      <button class="choice" type="button" data-num="2">2</button>
+      <button class="choice" type="button" data-num="3">3</button>
+      <button class="choice selected" type="button" data-num="4">4</button>
+    </div>
+    <div class="setting-title">Nombres de los jugadores</div>
+    <div class="fields" id="nameFields">
+      <label class="field"><span class="field-dot" style="background:#ed6679"></span><input maxlength="16" value="Jugador 1" aria-label="Nombre jugador 1" /></label>
+      <label class="field"><span class="field-dot" style="background:#458fe2"></span><input maxlength="16" value="Jugador 2" aria-label="Nombre jugador 2" /></label>
+      <label class="field"><span class="field-dot" style="background:#51af7d"></span><input maxlength="16" value="Jugador 3" aria-label="Nombre jugador 3" /></label>
+      <label class="field"><span class="field-dot" style="background:#a66de1"></span><input maxlength="16" value="Jugador 4" aria-label="Nombre jugador 4" /></label>
+    </div>
+    <div class="setting-title">Tipo de partida</div>
+    <div class="choice-row" id="speedChoices"><button class="choice selected" type="button" data-cards="12">Normal · 12 cartas</button><button class="choice" type="button" data-cards="6">Rápida · 6 cartas</button></div>
+    <div class="opts">
+      <label class="switch"><input id="autoOption" type="checkbox" /> Cartas automáticas</label>
+      <label class="switch"><input id="specialOption" type="checkbox" checked /> Cartas especiales</label>
+      <label class="switch"><input id="voiceOption" type="checkbox" /> Leer palabras en voz alta</label>
+    </div>
+    <button class="main-btn" id="startBtn">¡EMPEZAR PARTIDA! ▶</button>
+    <button class="secondary-btn" id="setupRulesBtn">Ver las reglas</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="rulesOverlay" role="dialog" aria-modal="true" aria-label="Reglas del juego">
+  <div class="modal">
+    <h2>📖 Cómo se juega</h2>
+    <div class="rules">
+      <p><b>1.</b> Por turnos, aparece una carta en el centro y se pronuncia la palabra en orden: <b>Taco, Gato, Cabra, Queso, Pizza</b>.</p>
+      <p><b>2.</b> Si la imagen coincide con la palabra, <b>todos pulsan su propia zona táctil</b> lo más rápido que puedan.</p>
+      <p><b>3.</b> <b>El último</b> en pulsar se queda con todas las cartas del montón. Si alguien pulsa cuando no toca, se lleva el montón por equivocarse.</p>
+      <p><b>4.</b> Para ganar hay que <b>quedarse sin cartas y ser el primero en pulsar</b> durante una coincidencia o carta especial.</p>
+      <p><b>Cartas especiales:</b> primero se hace el gesto de verdad y después se pulsa la zona. El sistema mide el toque, pero no puede comprobar el gesto.</p>
+      <div class="rule-specials"><div><b>🦍</b>Gorila<br />Golpea el pecho</div><div><b>🦫</b>Marmota<br />Golpea la mesa</div><div><b>🐋</b>Narval<br />Cuerno en la cabeza</div></div>
+      <p><b>Adaptación táctil:</b> las cartas se sacan con el botón central, o automáticamente si se ha activado esa opción. Se permiten 5 segundos para reaccionar.</p>
+    </div>
+    <button class="main-btn" id="closeRulesBtn">ENTENDIDO ✓</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="winOverlay" role="dialog" aria-modal="true" aria-label="Final de la partida">
+  <div class="modal">
+    <div class="winner-emoji">🏆🎉</div>
+    <h2 class="win-title" id="winTitle">¡TENEMOS GANADOR!</h2>
+    <p class="lead" id="winText">¡Enhorabuena!</p>
+    <button class="main-btn" id="playAgainBtn">JUGAR OTRA PARTIDA</button>
+    <button class="secondary-btn" id="winCloseBtn">Ver el tablero</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+  'use strict';
+  const WORDS = ["TACO", "GATO", "CABRA", "QUESO", "PIZZA"];
+  const TYPES = {
+    taco:{word:'TACO',emoji:'🌮'}, gato:{word:'GATO',emoji:'🐱'}, cabra:{word:'CABRA',emoji:'🐐'},
+    queso:{word:'QUESO',emoji:'🧀'}, pizza:{word:'PIZZA',emoji:'🍕'},
+    gorila:{word:'GORILA',emoji:'🦍',instruction:'¡Golpea tu pecho y pulsa!'},
+    marmota:{word:'MARMOTA',emoji:'🦫',instruction:'¡Golpea la mesa y pulsa!'},
+    narval:{word:'NARVAL',emoji:'🐋',instruction:'¡Haz un cuerno y pulsa!'}
+  };
+  const COLORS = [
+    {main:'#ec6679',light:'#ffedf0'}, {main:'#468fe3',light:'#e9f3ff'},
+    {main:'#47ad7c',light:'#e9fbed'}, {main:'#ac78e1',light:'#f5ecff'}
+  ];
+  const $ = id => document.getElementById(id);
+  const board = $('board'), zones = $('playerZones'), card = $('pictureCard');
+  const state = {count:4,cards:12,players:[],pile:[],turn:0,wordIndex:0,phase:'setup',currentCard:null,
+    currentWord:'',responses:new Map(),roundStart:0,roundTimeout:null,raf:0,autoTimer:0,
+    auto:false,special:true,voice:false,sound:true,animationNonce:0};
+  let audioCtx, toastTimer=0;
+  const RACE_MS = 5000;
+  function shuffled(items){let a=items.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function buildDeck(){const d=[];for(const type of WORDS){for(let j=0;j<12;j++) d.push(type.toLowerCase());}
+    if(state.special){for(const x of ['gorila','marmota','narval'])for(let j=0;j<4;j++)d.push(x);}return shuffled(d);}
+  function setOverlay(id,open){$(id).classList.toggle('hidden',!open);}
+  function toggleChoices(id,attr,value){for(const b of $(id).querySelectorAll('button'))b.classList.toggle('selected',Number(b.dataset[attr])===value);}
+  function showNames(){Array.from($('nameFields').children).forEach((f,i)=>f.hidden=i>=state.count);}
+  $('countChoices').addEventListener('click',e=>{let b=e.target.closest('button[data-num]');if(!b)return;state.count=Number(b.dataset.num);toggleChoices('countChoices','num',state.count);showNames();});
+  $('speedChoices').addEventListener('click',e=>{let b=e.target.closest('button[data-cards]');if(!b)return;state.cards=Number(b.dataset.cards);toggleChoices('speedChoices','cards',state.cards);});
+  function soundTone(freq=540,duration=.12,wave='sine',gain=.065){if(!state.sound)return;try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();
+    const osc=audioCtx.createOscillator(),vol=audioCtx.createGain(),now=audioCtx.currentTime;
+    osc.type=wave;osc.frequency.setValueAtTime(freq,now);vol.gain.setValueAtTime(gain,now);vol.gain.exponentialRampToValueAtTime(.0001,now+duration);
+    osc.connect(vol);vol.connect(audioCtx.destination);osc.start(now);osc.stop(now+duration);
+  }catch(_){} }
+  function speak(word){if(!state.voice||!('speechSynthesis' in window))return;try{
+    speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(word.toLowerCase());u.lang='es-ES';u.rate=1.16;u.pitch=1.08;speechSynthesis.speak(u);
+  }catch(_){} }
+  function showToast(msg,ms=1900){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),ms);}
+  function clearTimers(){clearTimeout(state.autoTimer);clearTimeout(state.roundTimeout);cancelAnimationFrame(state.raf);$('timer').style.display='none';}
+  function getNextPlayer(from){for(let n=0;n<state.players.length;n++){let idx=(from+n)%state.players.length;if(state.players[idx].hand.length)return idx;}return -1;}
+  function createPlayers(){const inputs=[...$('nameFields').querySelectorAll('input')];let deck=buildDeck();state.players=[];
+    for(let i=0;i<state.count;i++){
+      if(deck.length<state.cards)deck.push(...buildDeck());
+      const name=inputs[i].value.trim().slice(0,16)||`Jugador ${i+1}`;
+      state.players.push({name,id:i,hand:deck.splice(0,state.cards),color:COLORS[i],penalties:0,zone:null});
+    }
+  }
+  function initGame(){clearTimers();state.auto=$('autoOption').checked;state.special=$('specialOption').checked;state.voice=$('voiceOption').checked;
+    createPlayers();state.pile=[];state.turn=0;state.wordIndex=0;state.phase='ready';state.currentCard=null;
+    $('modeNote').textContent=state.auto?'Automático':'Manual';setOverlay('setupOverlay',false);setOverlay('winOverlay',false);
+    $('cardEmoji').textContent='🌮';$('cardLabel').textContent='¡A JUGAR!';card.className='picture-card cover';card.removeAttribute('data-type');
+    $('spokenWord').textContent='¿PREPARADOS?';$('status').textContent='Saca la primera carta';$('status').className='status';
+    $('turnNote').textContent='Cada niño toca su propia zona cuando haya coincidencia.';renderPlayers();renderControls();if(state.auto)scheduleNext(1400);
+  }
+  function renderPlayers(){board.dataset.count=state.players.length;zones.replaceChildren();
+    for(const p of state.players){
+      const z=document.createElement('button');z.type='button';z.className='player-zone';z.dataset.seat=p.id;z.style.setProperty('--accent',p.color.main);z.style.setProperty('--lighter',p.color.light);
+      z.innerHTML=`<span class="seat">ZONA ${p.id+1}</span><span class="player-name"></span><span class="player-count"></span><span class="palm">✋</span><span class="player-cue">¡PALMADA!</span>`;
+      z.querySelector('.player-name').textContent=p.name;
+      z.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();touchPlayer(p.id);},{passive:false});
+      z.addEventListener('contextmenu',e=>e.preventDefault());zones.appendChild(z);p.zone=z;
+    }
+    updatePlayerCards();
+  }
+  function updatePlayerCards(){for(const p of state.players){const zone=p.zone;if(!zone)continue;
+      zone.querySelector('.player-count').textContent=`${p.hand.length} carta${p.hand.length===1?'':'s'}`;
+      zone.classList.toggle('empty',p.hand.length===0);
+      zone.classList.toggle('ready-tap',state.phase==='reaction'&&!state.responses.has(p.id));
+      zone.classList.toggle('tapped',state.phase==='reaction'&&state.responses.has(p.id));
+      const cue=zone.querySelector('.player-cue');
+      if(state.phase==='reaction')cue.textContent=state.responses.has(p.id)?`✓ ${Math.round(state.responses.get(p.id))} ms`:'¡PULSA YA!';
+      else if(state.phase==='won')cue.textContent='¡FINAL!';
+      else cue.textContent='✋ TU BOTÓN';
+    }}
+  function renderControls(){const isRace=state.phase==='reaction',isWon=state.phase==='won';
+    $('nextBtn').disabled=isRace||isWon;$('nextBtn').textContent=isRace?'¡PALMADA! ✋':isWon?'PARTIDA TERMINADA':state.phase==='ready'?'SACAR CARTA ▶':state.phase==='resolved'?'CONTINUAR ▶':'SIGUIENTE CARTA ▶';
+    $('pileCount').textContent=`Montón: ${state.pile.length} carta${state.pile.length===1?'':'s'}`;
+    updatePlayerCards();
+  }
+  function showCard(type){card.className='picture-card';void card.offsetWidth;card.dataset.type=type;card.className='picture-card flip';
+    $('cardEmoji').textContent=TYPES[type].emoji;$('cardLabel').textContent=TYPES[type].word;
+  }
+  function flip(){if(state.phase==='setup'||state.phase==='reaction'||state.phase==='won')return;
+    clearTimers();const idx=getNextPlayer(state.turn);
+    if(idx<0){ // Si no quedan mazos con cartas, la clase resuelve por la velocidad de reacción de la última carrera.
+      endWithFewest();return;
+    }
+    const p=state.players[idx],type=p.hand.shift(),spoken=WORDS[state.wordIndex];
+    state.wordIndex=(state.wordIndex+1)%WORDS.length;state.turn=(idx+1)%state.players.length;
+    state.pile.push(type);state.currentCard=type;state.currentWord=spoken;
+    $('spokenWord').textContent=spoken;showCard(type);soundTone(370,.055,'triangle',.035);speak(spoken);
+    const isSpecial=!!TYPES[type].instruction, match=TYPES[type].word===spoken;
+    if(isSpecial||match){
+      state.phase='reaction';state.responses=new Map();state.roundStart=performance.now();
+      $('status').textContent=isSpecial?TYPES[type].instruction:'¡COINCIDENCIA! ¡PULSAD!';
+      $('status').className='status big';$('timer').style.display='block';
+      soundTone(780,.15,'square',.03);setTimeout(()=>soundTone(980,.14,'square',.024),110);
+      updateTimer();state.roundTimeout=setTimeout(finishRace,RACE_MS);
+      $('turnNote').textContent=isSpecial?'¡Haced el gesto antes de pulsar!':'¡Todos deben tocar su zona! El último se lleva el montón.';
+    } else {
+      state.phase='card';$('status').textContent=`Turno de ${p.name} · ¿Coinciden?`;
+      $('status').className='status';$('turnNote').textContent='Si no coinciden, no pulses: toca “Siguiente carta”.';
+      scheduleNext(1800);
+    }
+    renderControls();
+  }
+  function updateTimer(){if(state.phase!=='reaction')return;
+    let elapsed=performance.now()-state.roundStart,remaining=Math.max(0,1-elapsed/RACE_MS);
+    $('timerFill').style.width=`${remaining*100}%`;
+    $('timerFill').style.background=remaining<.35?'#e84859':'#f6b949';
+    state.raf=requestAnimationFrame(updateTimer);
+  }
+  function touchPlayer(index){if(!state.players.length||state.phase==='setup'||state.phase==='won'||state.phase==='resolved'||state.phase==='ready')return;
+    if(state.phase==='card'){const p=state.players[index];soundTone(180,.32,'sawtooth',.1);applyPenalty(index,`¡FALSA ALARMA! ${p.name} pulsó sin coincidencia.`);return;}
+    if(state.phase==='reaction'){
+      if(state.responses.has(index))return;
+      const ms=Math.max(0,performance.now()-state.roundStart);state.responses.set(index,ms);
+      const p=state.players[index];soundTone(420+index*90,.075,'sine',.05);
+      if(p.hand.length===0){declareWinner(index);return;}
+      updatePlayerCards();
+      if(state.responses.size===state.players.length)finishRace();
+    }
+  }
+  function finishRace(){if(state.phase!=='reaction')return;
+    clearTimers();const missing=state.players.filter(p=>!state.responses.has(p.id));let loser;
+    if(missing.length){loser=missing[Math.floor(Math.random()*missing.length)];}
+    else{loser=state.players.reduce((a,p)=>state.responses.get(p.id)>state.responses.get(a.id)?p:a,state.players[0]);}
+    const first=state.players.filter(p=>state.responses.has(p.id)).sort((a,b)=>state.responses.get(a.id)-state.responses.get(b.id))[0];
+    soundTone(250,.28,'triangle',.09);
+    let phrase=missing.length?`${loser.name} no pulsó a tiempo.`:`${loser.name} fue el último.`;
+    if(first)phrase+=` ¡Más rápido: ${first.name}!`;
+    applyPenalty(loser.id,phrase);
+  }
+  function applyPenalty(index,reason){if(state.phase==='won')return;
+    clearTimers();const count=state.pile.length;const p=state.players[index];
+    if(count){p.hand.push(...state.pile);p.penalties++;}
+    state.pile=[];state.turn=index;state.wordIndex=0;state.phase='resolved';
+    $('status').textContent=reason;$('status').className='status';
+    $('turnNote').textContent=`${p.name} recoge ${count} carta${count===1?'':'s'}. Vuelve a empezar por TACO.`;
+    renderControls();showToast(`${reason} +${count} carta${count===1?'':'s'}`,2500);scheduleNext(2400);
+  }
+  function declareWinner(index){clearTimers();state.phase='won';let p=state.players[index];
+    $('status').textContent=`🏆 ¡${p.name.toUpperCase()} GANA!`;
+    $('status').className='status big';$('turnNote').textContent='¡Ha conseguido quedarse sin cartas y ser el primero en reaccionar!';
+    $('winTitle').textContent=`¡${p.name} HA GANADO!`;
+    $('winText').textContent='Se quedó sin cartas y fue el primero en pulsar. ¡Gran partida!';
+    soundTone(620,.3,'sine',.11);setTimeout(()=>soundTone(820,.3,'sine',.1),240);setTimeout(()=>soundTone(1040,.4,'sine',.1),480);
+    renderControls();setTimeout(()=>setOverlay('winOverlay',true),800);
+  }
+  function endWithFewest(){clearTimers();state.phase='won';let best=state.players.reduce((a,b)=>a.hand.length<=b.hand.length?a:b);
+    $('status').textContent='FIN DE LAS CARTAS';$('winTitle').textContent='¡FIN DE LA PARTIDA!';
+    $('winText').textContent=`No quedan cartas para sacar. ${best.name} tiene la mejor posición (${best.hand.length} cartas).`;
+    renderControls();setOverlay('winOverlay',true);
+  }
+  function scheduleNext(delay){clearTimeout(state.autoTimer);if(!state.auto||state.phase==='won')return;
+    state.autoTimer=setTimeout(()=>{if(state.phase==='card'||state.phase==='resolved'||state.phase==='ready')flip();},delay);
+  }
+  function openRules(){setOverlay('rulesOverlay',true);}
+  function closeRules(){setOverlay('rulesOverlay',false);}
+  $('startBtn').addEventListener('click',initGame);
+  $('nextBtn').addEventListener('click',flip);
+  $('rulesBtn').addEventListener('click',openRules);
+  $('setupRulesBtn').addEventListener('click',openRules);
+  $('closeRulesBtn').addEventListener('click',closeRules);
+  $('restartBtn').addEventListener('click',()=>{clearTimers();state.phase='setup';setOverlay('winOverlay',false);setOverlay('setupOverlay',true);});
+  $('playAgainBtn').addEventListener('click',()=>{setOverlay('winOverlay',false);initGame();});
+  $('winCloseBtn').addEventListener('click',()=>setOverlay('winOverlay',false));
+  $('soundBtn').addEventListener('click',()=>{state.sound=!state.sound;const b=$('soundBtn');b.textContent=state.sound?'🔊':'🔇';b.classList.toggle('on',state.sound);if(state.sound)soundTone(690,.08);});
+  $('fullBtn').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch(_){showToast('El navegador no permite la pantalla completa.');}});
+  document.addEventListener('fullscreenchange',()=>{$('fullBtn').textContent=document.fullscreenElement?'⤡ Salir':'⛶ Pantalla';});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('rulesOverlay').classList.contains('hidden'))closeRules();
+    if(e.key===' '||e.key==='Enter'){if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT')return;
+      if(!$('setupOverlay').classList.contains('hidden')||!$('rulesOverlay').classList.contains('hidden')||!$('winOverlay').classList.contains('hidden'))return;
+      e.preventDefault();flip();}
+    if(/^[1-4]$/.test(e.key)&&$('setupOverlay').classList.contains('hidden')&&$('rulesOverlay').classList.contains('hidden'))touchPlayer(Number(e.key)-1);
+  });
+  document.addEventListener('contextmenu',e=>{if(e.target.closest('.board'))e.preventDefault();});
+  document.addEventListener('touchmove',e=>{if(e.target.closest('.board'))e.preventDefault();},{passive:false});
+  showNames();
+})();
+</script>
+</body>
+</html>
