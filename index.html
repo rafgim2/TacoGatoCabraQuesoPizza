@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#ffedb8">
-<title>Taco Gato Cabra Queso Pizza — Pantalla táctil (2–8 jugadores)</title>
+<title>Taco Gato Cabra Queso Pizza — Táctil (2–8 jugadores) · Victoria automática</title>
 <style>
 :root{--ink:#27314b;--yellow:#ffce4b;--cream:#fff7df;--paper:#fffdf7}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
@@ -36,6 +36,8 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button
 .player-zone.penalty{animation:penalty .55s ease-in-out 2;z-index:10;border:5px solid #e54f67;background:#ffecf0;box-shadow:0 0 0 4px #fff,0 0 0 11px #ed6077,0 10px 30px #dd3f6355}
 .player-zone.first{box-shadow:0 0 0 5px #fff,0 0 0 11px #ffcc44,0 10px 30px #ad872c55;z-index:8}
 .player-zone.empty .player-count{background:#e5f8ec;color:#187e50}
+.player-zone.champion{border:5px solid #f5b526;background:#fff8c8;box-shadow:0 0 0 4px #fff,0 0 0 12px #f5bc38,0 5px 36px #ffbb3c99;z-index:11}
+.player-zone.champion .player-cue{color:#a86a00;font-size:clamp(14px,1.35vw,19px)}
 .stage{position:absolute;inset:0;width:clamp(295px,44%,740px);height:100%;margin:auto;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:clamp(3px,.8vh,10px);padding:6px 8px;text-align:center;z-index:2;pointer-events:none}
 .stage>*{pointer-events:auto}.turn-badge{background:#fffdf7;border:2px solid #eddcb5;border-radius:15px;padding:5px 13px;box-shadow:0 4px 9px #54492812;max-width:100%;line-height:1.2}
 .board.awaiting-draw .turn-badge{background:color-mix(in srgb,var(--turn-color,#ffca4a) 24%,white);border:4px solid var(--turn-color,#ffca4a);box-shadow:0 0 0 3px white,0 7px 20px color-mix(in srgb,var(--turn-color,#ffca4a) 25%,transparent)}
@@ -59,7 +61,21 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button
 .name-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.name-field{display:flex;align-items:center;gap:7px;padding:5px 9px;background:#f6f4ef;border:2px solid #ebe6dd;border-radius:11px}.name-field[hidden]{display:none}.name-dot{width:15px;height:15px;border-radius:50%;flex:none}.name-field input{min-width:0;width:100%;font-weight:850;font-size:16px;border:0;background:transparent;color:var(--ink);padding:6px 0;user-select:text;-webkit-user-select:text}
 .options{display:flex;gap:14px;flex-wrap:wrap;margin:17px 0;font-size:14px;font-weight:800}.options label{display:inline-flex;gap:7px;align-items:center;cursor:pointer}.options input{width:19px;height:19px;accent-color:#e5a82d}.primary{display:block;width:100%;min-height:51px;background:#ffca42;border:0;border-radius:15px;box-shadow:0 5px 0 #dda632;font-size:19px;font-weight:1000;color:#463a2d;margin:16px 0 8px}.secondary{border:0;background:transparent;color:#766986;text-decoration:underline;font-size:14px;font-weight:850;display:block;min-height:36px;margin:auto;padding:6px 15px}
 .rules p{margin:10px 0;font-size:15px;line-height:1.42}.specials{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}.specials div{background:#f3f1e9;border-radius:12px;padding:9px 5px;text-align:center;font-weight:900;font-size:13px}.specials b{display:block;font-size:33px}
-.winner-icon{text-align:center;font-size:71px}.toast{position:fixed;left:50%;bottom:45px;z-index:200;transform:translate(-50%,14px);padding:11px 18px;border-radius:12px;background:#29334c;color:white;font-weight:900;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:90vw}.toast.show{opacity:1;transform:translate(-50%,0)}
+.winner-icon{text-align:center;font-size:clamp(68px,9vw,112px);line-height:1.25;filter:drop-shadow(0 7px 3px #e7b758);animation:trophy-win 1.05s cubic-bezier(.2,1.65,.4,1) both,trophy-float 2.3s ease-in-out 1.05s infinite alternate}
+.winner-overlay{background:radial-gradient(circle at 50% 48%,#fff5b8ad,#2f2b4eb8 83%);overflow:hidden}
+.winner-modal{position:relative;z-index:2;text-align:center;overflow:visible;border:5px solid #f4cb60;background:radial-gradient(circle at 50% 9%,#fff5d1,#fffdf5 70%);box-shadow:0 0 0 7px #fff8,0 22px 80px #4b2e54a8;animation:winner-appear .7s cubic-bezier(.17,1.45,.32,1) both}
+.winner-modal h2{font-size:clamp(27px,4.5vw,49px);color:#a44716;letter-spacing:-.03em;text-shadow:0 2px #ffe7a6;overflow-wrap:anywhere}
+.winner-modal .lead{font-size:clamp(17px,2.2vw,23px);font-weight:950;color:#65514d}
+.win-subtitle{font-size:clamp(12px,1.6vw,18px);font-weight:1000;letter-spacing:.18em;color:#b36a13;margin:2px auto 10px}
+.win-zero{display:inline-block;background:#fff2af;border:3px solid #e4b74b;border-radius:999px;padding:8px 20px;font-size:clamp(17px,2vw,24px);font-weight:1000;color:#6c4b17;margin-bottom:10px}
+.win-confetti{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.confetti-piece{position:absolute;left:var(--x);top:-28px;width:var(--w);height:var(--h);background:var(--color);border-radius:2px;opacity:1;animation:confetti-fall var(--dur) linear var(--delay) infinite;transform:rotate(var(--rotation));will-change:transform}
+@keyframes confetti-fall{0%{transform:translate3d(0,-40px,0) rotate(0deg)}100%{transform:translate3d(var(--drift),110vh,0) rotate(720deg)}}
+@keyframes winner-appear{0%{opacity:0;transform:translateY(35px) scale(.72)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes trophy-win{0%{transform:scale(.25) rotate(-32deg);opacity:0}65%{transform:scale(1.26) rotate(9deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes trophy-float{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-11px) rotate(3deg)}}
+@media(prefers-reduced-motion:reduce){.win-confetti{display:none}}
+.toast{position:fixed;left:50%;bottom:45px;z-index:200;transform:translate(-50%,14px);padding:11px 18px;border-radius:12px;background:#29334c;color:white;font-weight:900;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:90vw}.toast.show{opacity:1;transform:translate(-50%,0)}
 @keyframes turn-beacon{from{box-shadow:0 0 0 5px white,0 0 0 10px var(--accent),0 0 12px 3px color-mix(in srgb,var(--accent) 38%,transparent)}to{box-shadow:0 0 0 5px #fff,0 0 0 17px color-mix(in srgb,var(--accent) 72%,transparent),0 0 32px 13px color-mix(in srgb,var(--accent) 54%,transparent)}}
 @keyframes tap-bounce{from{translate:0 0}to{translate:0 -5px}}
 @keyframes pulse{to{box-shadow:0 0 0 7px color-mix(in srgb,var(--accent) 31%,transparent),0 12px 21px #2222}}@keyframes penalty{20%,70%{transform:translateY(-50%) rotate(-2deg)}40%,90%{transform:translateY(-50%) rotate(2deg)}}@keyframes land{from{transform:scale(1.18) rotateY(48deg);opacity:.2}to{transform:scale(1) rotateY(0);opacity:1}}@keyframes result-arrive{from{transform:translate(-50%,-45%) scale(.9);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
@@ -126,16 +142,17 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button
   <p><b>1.</b> Se destaca claramente la zona del jugador al que le toca. <b>Él toca su propia zona para sacar una carta</b>; la carta vuela hasta el centro y se descubre al llegar. La palabra sigue el orden <b>Taco → Gato → Cabra → Queso → Pizza</b>.</p>
   <p><b>2.</b> Cuando la carta se revela, <b>nadie recibe avisos</b>: mirad si el dibujo coincide con la palabra de arriba. Si coincide, <b>todos</b> tocan su propia zona cuanto antes. Con una carta especial, haced primero el gesto correspondiente.</p>
   <p><b>3.</b> Al terminar la reacción, se ilumina brevemente quién fue el más rápido y quién recoge las cartas. El montón vuela a su zona, <b>sin carteles que paren la partida</b>. Una pulsación sin coincidencia hace recoger el montón.</p>
-  <p><b>4.</b> Si no coinciden, la carta permanece al menos <b>2,75 segundos</b> antes de indicar el siguiente jugador. La entrega del montón dura aproximadamente <b>1,5 segundos</b>. El que recoge vuelve a empezar por «Taco».</p>
-  <p><b>5.</b> Para ganar hay que quedarse <b>sin cartas</b> y ser <b>el primero en tocar</b> en una coincidencia o especial.</p>
+  <p><b>4.</b> Si no coinciden, la carta permanece al menos <b>2,75 segundos</b> antes de indicar el siguiente jugador. La entrega del montón dura aproximadamente <b>1,5 segundos</b>. El jugador que pierde recoge las cartas, pero <b>no saca la siguiente</b>: saca carta el siguiente jugador en orden y la palabra vuelve a «Taco».</p>
+  <p><b>5.</b> <b>Victoria automática:</b> el jugador que saque su última carta y llegue a <b>0 cartas gana inmediatamente</b>, sin tener que tocar en otra coincidencia. Suena una fanfarria, aparece una celebración y se termina la partida.</p>
   <div class="specials"><div><b>🦍</b>Gorila<br>Golpea el pecho</div><div><b>🦫</b>Marmota<br>Golpea la mesa</div><div><b>🐋</b>Narval<br>Cuerno en la cabeza</div></div>
   <p><b>Adaptación para clase:</b> cada reacción se mide durante 7 segundos. Si varios no pulsan, recoge quien sacó la carta si está entre ellos; en otro caso, el primer no respondedor siguiendo los turnos. La pantalla no puede comprobar si los gestos se han hecho correctamente.</p>
  </div>
  <button class="primary" type="button" id="closeRulesBtn">ENTENDIDO ✓</button></div>
 </div>
-<div class="overlay" id="winOverlay" role="dialog" aria-modal="true" aria-label="Fin de la partida" hidden>
- <div class="modal"><div class="winner-icon">🏆🎉</div><h2 id="winTitle">¡TENEMOS GANADOR!</h2><p class="lead" id="winText">¡Enhorabuena!</p>
- <button class="primary" type="button" id="playAgainBtn">JUGAR OTRA PARTIDA</button><button class="secondary" type="button" id="winCloseBtn">Ver tablero</button></div>
+<div class="overlay winner-overlay" id="winOverlay" role="dialog" aria-modal="true" aria-label="Fin de la partida" hidden>
+ <div class="win-confetti" id="winConfetti" aria-hidden="true"></div>
+ <div class="modal winner-modal"><div class="win-subtitle">★ FIN DE PARTIDA ★</div><div class="winner-icon" aria-hidden="true">🏆</div><h2 id="winTitle">¡TENEMOS GANADOR!</h2><div class="win-zero">🃏 0 CARTAS</div><p class="lead" id="winText">¡Enhorabuena!</p>
+ <button class="primary" type="button" id="playAgainBtn">🎮 JUGAR OTRA PARTIDA</button><button class="secondary" type="button" id="winCloseBtn">Ver tablero final</button></div>
 </div>
 <div class="toast" id="toast" role="status"></div>
 <script>
@@ -159,8 +176,8 @@ const RACE_MS=7000, RESULT_MS=1550, NON_MATCH_MS=2750, DEAL_MS=760;
 const $=id=>document.getElementById(id);
 const board=$('board'),zones=$('playerZones'),picture=$('pictureCard');
 const state={count:4,cards:12,players:[],pile:[],turn:0,wordIndex:0,phase:'setup',currentCard:null,currentWord:'',dealer:0,
- responses:new Map(),roundStart:0,roundTimeout:0,raf:0,resultTimer:0,waitInterval:0,extraTimers:[],special:true,voice:false,sound:true,music:true,animationId:0,finalDuel:false,penaltyId:-1,fastestId:-1,penaltyCards:0};
-let audioCtx=null,musicLoop=0,musicStep=0,musicNextTime=0,musicMaster=null,toastTimer=0;
+ responses:new Map(),roundStart:0,roundTimeout:0,raf:0,resultTimer:0,waitInterval:0,extraTimers:[],special:true,voice:false,sound:true,music:true,animationId:0,penaltyId:-1,fastestId:-1,penaltyCards:0,winnerId:-1};
+let audioCtx=null,musicLoop=0,musicStep=0,musicNextTime=0,musicMaster=null,victoryBus=null,toastTimer=0;
 const prefersReduced=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function shuffle(items){const a=items.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function buildDeck(){const deck=[];for(const type of WORDS)for(let j=0;j<12;j++)deck.push(type.toLowerCase());if(state.special)for(const type of ['gorila','marmota','narval'])for(let j=0;j<4;j++)deck.push(type);return shuffle(deck);}
@@ -182,6 +199,22 @@ function musicTick(){if(!state.music||state.phase==='setup'||state.phase==='won'
 }
 function musicStart(){if(!state.music||state.phase==='setup'||state.phase==='won')return;if(!initAudio())return;clearInterval(musicLoop);musicNextTime=audioCtx.currentTime+.08;musicLoop=setInterval(musicTick,110);musicTick();}
 function musicStop(){clearInterval(musicLoop);musicLoop=0;}
+// Fanfarria original de victoria: independiente de la música de la partida.
+// Respeta el silencio si el profesor ha apagado tanto música como efectos.
+function stopVictory(){if(victoryBus){try{victoryBus.disconnect();}catch(e){}victoryBus=null;}}
+function playVictoryFanfare(){stopVictory();if(!(state.music||state.sound)||!initAudio())return;
+ const bus=audioCtx.createGain();bus.gain.value=.42;bus.connect(audioCtx.destination);victoryBus=bus;
+ const start=audioCtx.currentTime+.06;
+ function note(freq,when,len,volume,wave='triangle'){
+  const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type=wave;osc.frequency.setValueAtTime(freq,when);
+  gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(volume,when+.025);
+  gain.gain.setValueAtTime(volume*.7,when+Math.max(.03,len-.09));gain.gain.exponentialRampToValueAtTime(.0001,when+len);
+  osc.connect(gain);gain.connect(bus);osc.start(when);osc.stop(when+len+.015);
+ }
+ const tune=[[523.25,.22],[659.25,.22],[783.99,.22],[1046.5,.56],[783.99,.22],[880,.22],[987.77,.22],[1174.66,.60],[1046.5,.23],[1174.66,.23],[1318.51,.83]];
+ let at=start;for(let i=0;i<tune.length;i++){const [hz,duration]=tune[i];note(hz,at,duration*.92,.24);if(i===3||i===7||i===10){note(hz/2,at,duration*.97,.16,'sine');note(hz*1.25,at,duration*.90,.08,'sine');}at+=duration;}
+ note(261.63,start,1,.09,'sine');note(392,start+.7,.95,.09,'sine');note(523.25,at-.83,.85,.16,'sine');
+}
 function musicToggle(value){state.music=value;$('musicBtn').classList.toggle('on',value);$('musicBtn').textContent=value?'♫ Música':'♪ Silencio';$('musicOption').checked=value;if(value)musicStart();else musicStop();}
 function say(text){if(!state.voice||!('speechSynthesis'in window))return;try{speechSynthesis.cancel();const utt=new SpeechSynthesisUtterance(text.toLowerCase());utt.lang='es-ES';utt.rate=1.17;speechSynthesis.speak(utt);}catch(e){}}
 function populateSettings(){for(let n=2;n<=8;n++){const b=document.createElement('button');b.type='button';b.className='choice'+(n===state.count?' selected':'');b.textContent=n;b.dataset.num=n;$('countChoices').appendChild(b);}
@@ -205,7 +238,7 @@ function layoutSeats(){const portrait=window.matchMedia('(orientation: portrait)
  p.zone.dataset.side=left?'left':'right';p.zone.style.left=left?'1%':'auto';p.zone.style.right=left?'auto':'1%';p.zone.style.width='';p.zone.style.top=`${((row+.5)/n)*100}%`;p.zone.style.height=`calc(${100/n}% - 13px)`;}
  }}
 function refreshZones(){board.classList.toggle('awaiting-draw',state.phase==='ready');for(const p of state.players){if(!p.zone)continue;const z=p.zone;const hand=p.hand.length;
- z.querySelector('.player-count').textContent=`${hand} carta${hand===1?'':'s'}`;z.classList.toggle('empty',hand===0);z.classList.toggle('penalty',state.phase==='result'&&p.id===state.penaltyId);z.classList.toggle('first',state.phase==='result'&&p.id===state.fastestId);
+ z.querySelector('.player-count').textContent=`${hand} carta${hand===1?'':'s'}`;z.classList.toggle('empty',hand===0);z.classList.toggle('champion',state.phase==='won'&&p.id===state.winnerId);z.classList.toggle('penalty',state.phase==='result'&&p.id===state.penaltyId);z.classList.toggle('first',state.phase==='result'&&p.id===state.fastestId);
  z.classList.toggle('is-turn',state.phase==='ready'&&state.turn===p.id);
  z.classList.remove('can-react');
  z.classList.toggle('has-reacted',state.phase==='reaction'&&state.responses.has(p.id));
@@ -214,10 +247,12 @@ function refreshZones(){board.classList.toggle('awaiting-draw',state.phase==='re
  else if(state.phase==='reaction'){symbol.textContent=state.responses.has(p.id)?'✅':'🃏';cue.textContent=state.responses.has(p.id)?'TOQUE REGISTRADO':'ESPERA TU TURNO';}
  else if(state.phase==='result'){if(p.id===state.penaltyId){symbol.textContent='📥';cue.textContent=`RECIBE +${state.penaltyCards} CARTAS`;}else if(p.id===state.fastestId){symbol.textContent='🥇';cue.textContent='EL MÁS RÁPIDO';}else{symbol.textContent='🃏';cue.textContent='ESPERA TU TURNO';}}
  else if(state.phase==='dealing'){symbol.textContent='🃏';cue.textContent='SALIENDO CARTA…';}
- else if(state.phase==='won'){symbol.textContent='🏆';cue.textContent='FIN DE PARTIDA';}
+ else if(state.phase==='won'){symbol.textContent=p.id===state.winnerId?'🏆':'🃏';cue.textContent=p.id===state.winnerId?'¡CAMPEÓN!':'PARTIDA TERMINADA';}
  else{symbol.textContent='🃏';cue.textContent='ESPERA TU TURNO';}}
 }
-function showNextTurn(){const next=nextActive(state.turn);if(next<0){startFinalDuel();return;}state.turn=next;state.phase='ready';state.penaltyId=-1;state.fastestId=-1;board.style.setProperty('--turn-color',state.players[next].color.main);$('turnCaption').textContent='🃏 ¡TURNO DE!';$('spokenWord').textContent=state.players[next].name.toUpperCase();$('status').textContent=`👆 ¡${state.players[next].name}, toca tu zona!`;$('status').className='status';$('helptext').textContent='Los demás esperan. Solo toca el jugador señalado.';$('footerInfo').textContent=`Turno de ${state.players[next].name}: pulsa su zona para lanzar la carta.`;refreshZones();}
+function showNextTurn(){if(state.phase==='won')return;
+ const empty=state.players.find(p=>p.hand.length===0);if(empty){declareWinner(empty.id);return;}
+ const next=nextActive(state.turn);if(next<0)return;state.turn=next;state.phase='ready';state.penaltyId=-1;state.fastestId=-1;board.style.setProperty('--turn-color',state.players[next].color.main);$('turnCaption').textContent='🃏 ¡TURNO DE!';$('spokenWord').textContent=state.players[next].name.toUpperCase();$('status').textContent=`👆 ¡${state.players[next].name}, toca tu zona!`;$('status').className='status';$('helptext').textContent='Los demás esperan. Solo toca el jugador señalado.';$('footerInfo').textContent=`Turno de ${state.players[next].name}: pulsa su zona para lanzar la carta.`;refreshZones();}
 function showCard(type){picture.className='picture-card';picture.dataset.type=type;picture.classList.add('pop');$('cardEmoji').textContent=TYPES[type].emoji;$('cardLabel').textContent=TYPES[type].word;}
 function pileText(){$('pileCount').textContent=`Montón: ${state.pile.length} carta${state.pile.length===1?'':'s'}`;}
 function animateDeal(index,onFinish){const rect=state.players[index].zone.getBoundingClientRect(),target=$('cardStack').getBoundingClientRect();
@@ -240,15 +275,17 @@ function animateCollect(index,count){if(prefersReduced())return;const src=$('car
 }
 function press(id){if(state.phase==='setup'||state.phase==='dealing'||state.phase==='result'||state.phase==='won')return;
  if(state.phase==='ready'){if(id!==state.turn){tone(230,.11,'triangle',.026);toast(`Ahora le toca a ${state.players[state.turn].name}.`,1200);return;}flipFrom(id);return;}
- if(state.phase==='card'){if(state.finalDuel)return;tone(155,.27,'sawtooth',.062);applyPenalty(id,`¡Falsa alarma! ${state.players[id].name} pulsó sin coincidencia.`,null);return;}
+ if(state.phase==='card'){tone(155,.27,'sawtooth',.062);applyPenalty(id,`¡Falsa alarma! ${state.players[id].name} pulsó sin coincidencia.`,null);return;}
  if(state.phase==='reaction'){if(state.responses.has(id))return;state.responses.set(id,Math.max(0,performance.now()-state.roundStart));tone(470+id*65,.085,'sine',.055);
  if(state.responses.size===state.players.length)finishRace();else refreshZones();return;}
 }
 function flipFrom(id){resetClocks();const p=state.players[id];if(!p.hand.length){state.turn=(id+1)%state.players.length;showNextTurn();return;}
  const type=p.hand.shift(),spoken=WORDS[state.wordIndex];state.currentCard=type;state.currentWord=spoken;state.dealer=id;state.wordIndex=(state.wordIndex+1)%WORDS.length;
- state.turn=(id+1)%state.players.length;state.pile.push(type);state.phase='dealing';state.finalDuel=false;
+ state.turn=(id+1)%state.players.length;state.pile.push(type);state.phase='dealing';const isLastCard=p.hand.length===0;
  $('turnCaption').textContent=`CARTA DE ${p.name.toUpperCase()}`;$('spokenWord').textContent=spoken;$('status').textContent='🃏 La carta viaja al centro…';$('status').className='status';$('helptext').textContent='Mirad la carta cuando aparezca.';pileText();refreshZones();tone(365,.10,'triangle',.045);
  const animID=++state.animationId;animateDeal(id,()=>{if(animID!==state.animationId||state.phase!=='dealing')return;showCard(type);say(spoken);
+ // Al revelar la última carta se termina la partida automáticamente.
+ if(isLastCard){declareWinner(id);return;}
  const match=TYPES[type].word===spoken, special=!!TYPES[type].instruction;
  // El juego NO da pistas cuando hay coincidencia: misma pantalla, texto y sonido.
  $('turnCaption').textContent='PALABRA DEL TURNO';
@@ -264,8 +301,6 @@ function updateProgress(){if(state.phase!=='reaction')return;const remaining=Mat
 function chooseNonResponder(missed){const dealer=missed.find(p=>p.id===state.dealer);if(dealer)return dealer;for(let step=1;step<=state.players.length;step++){const id=(state.dealer+step)%state.players.length;const p=missed.find(x=>x.id===id);if(p)return p;}return missed[0];}
 function finishRace(){if(state.phase!=='reaction')return;clearTimeout(state.roundTimeout);cancelAnimationFrame(state.raf);$('progress').style.display='none';
  const responders=state.players.filter(p=>state.responses.has(p.id)).sort((a,b)=>state.responses.get(a.id)-state.responses.get(b.id));const first=responders[0];
- if(state.finalDuel){if(first)declareWinner(first.id);else{state.phase='card';$('status').textContent='¡Nadie pulsó! Repetimos el reto final.';t(()=>startFinalDuel(),1500);}return;}
- if(first&&first.hand.length===0){declareWinner(first.id);return;}
  const missed=state.players.filter(p=>!state.responses.has(p.id));let loser;
  if(missed.length)loser=chooseNonResponder(missed);else loser=responders[responders.length-1];
  let detail=missed.length?`${missed.length} jugador${missed.length===1?' no pulsó':'es no pulsaron'} a tiempo.`:`${loser.name} fue el último en pulsar.`;
@@ -274,7 +309,7 @@ function finishRace(){if(state.phase!=='reaction')return;clearTimeout(state.roun
 function applyPenalty(id,reason,fastestId){
  if(state.phase==='won'||state.phase==='result')return;
  const p=state.players[id],n=state.pile.length;
- resetClocks();p.hand.push(...state.pile);state.pile=[];state.wordIndex=0;state.turn=id;
+ resetClocks();p.hand.push(...state.pile);state.pile=[];state.wordIndex=0;state.turn=(id+1)%state.players.length;
  state.phase='result';state.penaltyId=id;state.penaltyCards=n;
  state.fastestId=Number.isInteger(fastestId)?fastestId:-1;
  pileText();
@@ -283,20 +318,40 @@ function applyPenalty(id,reason,fastestId){
  $('status').textContent=`📥 ${p.name} recoge ${n} carta${n===1?'':'s'}`;
  $('status').className='status';
  $('helptext').textContent=state.fastestId>=0?`🥇 ${state.players[state.fastestId].name} fue el más rápido.`:'Toque equivocado: recoge el montón.';
- $('footerInfo').textContent=`${p.name} recibe ${n} cartas y vuelve a sacar con TACO.`;
+ $('footerInfo').textContent=`${p.name} recibe ${n} cartas. Saca el siguiente jugador y la palabra vuelve a TACO.`;
  refreshZones();tone(300,.20,'triangle',.06);
  animateCollect(id,n);
  state.resultTimer=setTimeout(()=>{if(state.phase!=='result')return;showNextTurn();},RESULT_MS);
 }
-function declareWinner(id){resetClocks();state.phase='won';musicStop();const p=state.players[id];
- $('turnCaption').textContent='🏆 ¡PARTIDA TERMINADA!';$('spokenWord').textContent=p.name.toUpperCase();$('status').textContent=`🎉 ¡${p.name} HA GANADO!`;$('status').className='status hot';$('helptext').textContent='¡Se quedó sin cartas y fue el primero en tocar!';$('footerInfo').textContent=`Ganador: ${p.name}`;
- $('winTitle').textContent=`¡${p.name} HA GANADO!`;$('winText').textContent='Se quedó sin cartas y fue el primero en reaccionar. ¡Felicidades!';refreshZones();tone(650,.31,'sine',.09);t(()=>tone(840,.31,'sine',.09),240);t(()=>tone(1040,.48,'sine',.10),490);t(()=>overlay('winOverlay',true),1400);
+function makeConfetti(){const layer=$('winConfetti');layer.replaceChildren();
+ const hues=['#ffcf3e','#ec5e81','#52b5e5','#44bd8b','#b078de','#fff0a0'];
+ const fragment=document.createDocumentFragment();
+ for(let i=0;i<85;i++){
+  const el=document.createElement('i');el.className='confetti-piece';
+  el.style.setProperty('--x',`${(i*.61803398875%1)*100}%`);
+  el.style.setProperty('--w',`${7+i%7}px`);el.style.setProperty('--h',`${9+i%9}px`);
+  el.style.setProperty('--color',hues[i%hues.length]);
+  el.style.setProperty('--dur',`${3.6+(i%11)*.28}s`);
+  el.style.setProperty('--delay',`${-(i%19)*.25}s`);
+  el.style.setProperty('--drift',`${((i*17)%160)-80}px`);
+  el.style.setProperty('--rotation',`${i*23}deg`);
+  fragment.appendChild(el);
+ }
+ layer.appendChild(fragment);
 }
-function startFinalDuel(){state.phase='card';state.finalDuel=true;state.currentCard='taco';state.currentWord='TACO';state.responses=new Map();showCard('taco');$('turnCaption').textContent='⚡ RETO FINAL';$('spokenWord').textContent='TACO';$('status').textContent='¡Todos sin cartas! ¡Primero en tocar gana!';$('status').className='status hot';$('helptext').textContent='¡Tocad vuestra zona ahora!';$('progress').style.display='block';state.phase='reaction';state.roundStart=performance.now();updateProgress();state.roundTimeout=setTimeout(finishRace,RACE_MS);refreshZones();}
-function initGame(){resetClocks();++state.animationId;state.special=$('specialOption').checked;state.voice=$('voiceOption').checked;state.music=$('musicOption').checked;musicStop();createPlayers();state.pile=[];state.turn=0;state.wordIndex=0;state.phase='ready';state.currentCard=null;state.finalDuel=false;
+function declareWinner(id){if(state.phase==='won')return;
+ resetClocks();state.phase='won';state.winnerId=id;musicStop();const p=state.players[id];
+ $('turnCaption').textContent='🏆 ¡PARTIDA TERMINADA!';$('spokenWord').textContent=p.name.toUpperCase();
+ $('status').textContent=`🎉 ¡${p.name} HA GANADO!`;$('status').className='status hot';
+ $('helptext').textContent='¡Ha llegado a 0 cartas!';$('footerInfo').textContent=`Ganador: ${p.name} · 0 cartas`;
+ $('winTitle').textContent=`¡${p.name} HA GANADO!`;
+ $('winText').textContent='¡Se ha quedado sin cartas! La partida ha terminado.';
+ refreshZones();makeConfetti();overlay('winOverlay',true);playVictoryFanfare();
+}
+function initGame(){resetClocks();stopVictory();++state.animationId;state.special=$('specialOption').checked;state.voice=$('voiceOption').checked;state.music=$('musicOption').checked;musicStop();createPlayers();state.pile=[];state.turn=0;state.wordIndex=0;state.phase='ready';state.currentCard=null;state.winnerId=-1;
  picture.className='picture-card cover';picture.removeAttribute('data-type');$('cardEmoji').textContent='🌮';$('cardLabel').textContent='¡A JUGAR!';pileText();overlay('setupOverlay',false);overlay('winOverlay',false);
  renderPlayers();showNextTurn();musicToggle(state.music);if(state.sound)initAudio();}
-function newGameSetup(){resetClocks();++state.animationId;musicStop();state.phase='setup';overlay('winOverlay',false);overlay('setupOverlay',true);}
+function newGameSetup(){resetClocks();stopVictory();++state.animationId;musicStop();state.phase='setup';overlay('winOverlay',false);overlay('setupOverlay',true);}
 function showRules(){overlay('rulesOverlay',true);}function hideRules(){overlay('rulesOverlay',false);}
 $('countChoices').addEventListener('click',e=>{const b=e.target.closest('button[data-num]');if(!b)return;state.count=Number(b.dataset.num);showNames();});
 $('speedChoices').addEventListener('click',e=>{const b=e.target.closest('button[data-cards]');if(!b)return;state.cards=Number(b.dataset.cards);[...$('speedChoices').querySelectorAll('button')].forEach(x=>x.classList.toggle('selected',Number(x.dataset.cards)===state.cards));});
