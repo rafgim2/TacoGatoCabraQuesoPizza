@@ -24,16 +24,22 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button
 .player-count{font-size:clamp(11px,1.15vw,17px);font-weight:900;background:#fff;border-radius:99px;padding:3px 12px;border:2px solid color-mix(in srgb,var(--accent) 30%,transparent)}
 .player-symbol{font-size:clamp(20px,3.5vh,42px);line-height:1.05;filter:drop-shadow(0 2px #fff)}
 .player-cue{font-size:clamp(11px,1.1vw,17px);font-weight:1000;color:var(--accent);line-height:1.12;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis}
-.player-zone.is-turn{box-shadow:0 0 0 6px #fff9,0 0 0 10px var(--accent),0 10px 28px #55492238;z-index:9;background:color-mix(in srgb,var(--light) 75%,#fff)}
+.board.awaiting-draw .player-zone:not(.is-turn){filter:saturate(.48) brightness(.95);opacity:.67}
+.player-zone.is-turn{border:5px solid var(--accent);box-shadow:0 0 0 5px white,0 0 0 13px var(--accent),0 0 34px 12px color-mix(in srgb,var(--accent) 54%,transparent);z-index:9;background:color-mix(in srgb,var(--light) 48%,#fff);animation:turn-beacon 1.15s ease-in-out infinite alternate;filter:saturate(1.25)}
+.player-zone.is-turn::after{content:'👆 ¡TOCA AQUÍ!';position:absolute;top:4px;right:5px;border-radius:99px;background:var(--accent);color:#151b29;padding:3px 9px;font-weight:1000;font-size:clamp(10px,1.1vw,15px);box-shadow:0 3px 0 #2222;animation:tap-bounce .7s ease-in-out infinite alternate}
+.player-zone.is-turn .player-name{font-size:clamp(18px,2.15vw,29px);color:#1b2740;text-decoration:underline;text-decoration-thickness:3px;text-decoration-color:var(--accent);text-underline-offset:4px}
+.player-zone.is-turn .player-symbol{animation:tap-bounce .6s ease-in-out infinite alternate;filter:drop-shadow(0 3px 3px #fff)}
 .player-zone.is-turn .player-cue{color:#27314b;font-size:clamp(12px,1.25vw,18px)}
 .player-zone.can-react{animation:pulse .7s ease-in-out infinite alternate;background:color-mix(in srgb,var(--light) 82%,#fff)}
 .player-zone.has-reacted{background:#e1f5e5;border-color:#59b978;filter:saturate(.74)}
 .player-zone.has-reacted .player-cue{color:#2b8857}
-.player-zone.penalty{animation:penalty .75s ease-in-out 2;z-index:10}
+.player-zone.penalty{animation:penalty .55s ease-in-out 2;z-index:10;border:5px solid #e54f67;background:#ffecf0;box-shadow:0 0 0 4px #fff,0 0 0 11px #ed6077,0 10px 30px #dd3f6355}
 .player-zone.first{box-shadow:0 0 0 5px #fff,0 0 0 11px #ffcc44,0 10px 30px #ad872c55;z-index:8}
 .player-zone.empty .player-count{background:#e5f8ec;color:#187e50}
 .stage{position:absolute;inset:0;width:clamp(295px,44%,740px);height:100%;margin:auto;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:clamp(3px,.8vh,10px);padding:6px 8px;text-align:center;z-index:2;pointer-events:none}
 .stage>*{pointer-events:auto}.turn-badge{background:#fffdf7;border:2px solid #eddcb5;border-radius:15px;padding:5px 13px;box-shadow:0 4px 9px #54492812;max-width:100%;line-height:1.2}
+.board.awaiting-draw .turn-badge{background:color-mix(in srgb,var(--turn-color,#ffca4a) 24%,white);border:4px solid var(--turn-color,#ffca4a);box-shadow:0 0 0 3px white,0 7px 20px color-mix(in srgb,var(--turn-color,#ffca4a) 25%,transparent)}
+.board.awaiting-draw .turn-badge .word{font-size:clamp(22px,2.75vw,38px)}
 .turn-badge .cap{font-size:clamp(9px,.85vw,12px);font-weight:1000;color:#867d82;letter-spacing:.12em}.turn-badge .word{display:block;font-size:clamp(19px,2.15vw,33px);font-weight:1000;line-height:1.07;overflow-wrap:anywhere}
 .card-stack{width:clamp(130px,15vw,203px);height:clamp(165px,29vh,250px);position:relative;flex:none;margin:4px auto;perspective:900px}
 .card-stack::before,.card-stack::after{content:"";position:absolute;inset:0;background:#fff1c8;border:3px solid #efdca6;border-radius:21px;transform:translate(-6px,5px) rotate(-7deg);box-shadow:0 8px 15px #3b383b14}.card-stack::after{transform:translate(7px,2px) rotate(8deg);background:#fff9e8}
@@ -46,8 +52,6 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button
 .status.hot{color:#cf4161;font-size:clamp(16px,1.8vw,26px)}
 .helptext{font-size:clamp(10px,1vw,14px);font-weight:850;color:#837b79;max-width:100%;line-height:1.2;text-wrap:balance}
 .progress{width:min(78%,265px);height:11px;border-radius:99px;border:2px solid #e6d7b7;background:#fff;overflow:hidden;display:none;flex:none}.progress>div{height:100%;width:100%;background:#ffba51;transition:width .08s linear}
-.result-panel{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(96%,485px);padding:clamp(13px,2vw,25px);border-radius:26px;border:5px solid #fff;box-shadow:0 24px 55px #2f304e53;z-index:13;background:#fff4cb;pointer-events:none;animation:result-arrive .28s ease-out}
-.result-panel[hidden]{display:none}.result-tag{font-size:clamp(11px,1vw,14px);letter-spacing:.12em;font-weight:1000;color:#9d7744}.result-fast{font-weight:1000;font-size:clamp(18px,2.65vw,36px);line-height:1.11;color:#1c936c;margin:7px 0;overflow-wrap:anywhere}.result-loser{font-size:clamp(19px,2.85vw,39px);line-height:1.1;color:#c34f4e;font-weight:1000;margin:7px 0;overflow-wrap:anywhere}.result-extra{font-weight:900;font-size:clamp(13px,1.3vw,18px);line-height:1.24;margin-top:12px}.result-wait{font-weight:850;color:#8f817c;font-size:clamp(11px,1vw,14px);margin-top:10px}
 .fly-card{position:fixed;z-index:50;display:grid;place-items:center;width:100px;height:130px;border-radius:14px;border:3px solid #edac2e;background:repeating-linear-gradient(45deg,#ffd046 0 17px,#ffe484 17px 34px);box-shadow:0 9px 20px #30354e3d;pointer-events:none;font-size:38px;will-change:transform,opacity}.fly-card.payout{width:68px;height:88px;font-size:25px}
 .bottom{display:flex;align-items:center;justify-content:center;gap:12px;flex:none;min-height:32px;background:#fffbe9b8;border-top:1px solid #f0dfb8;padding:4px 12px;text-align:center;color:#7d7173;font-weight:850;font-size:12px}.pill{white-space:nowrap;border:1px solid #e8d7ae;background:#fff2cc;border-radius:9px;padding:3px 8px;color:#705a49}
 .overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:12px;background:#222c438e;backdrop-filter:blur(8px)}.overlay[hidden]{display:none}
@@ -56,14 +60,18 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button
 .options{display:flex;gap:14px;flex-wrap:wrap;margin:17px 0;font-size:14px;font-weight:800}.options label{display:inline-flex;gap:7px;align-items:center;cursor:pointer}.options input{width:19px;height:19px;accent-color:#e5a82d}.primary{display:block;width:100%;min-height:51px;background:#ffca42;border:0;border-radius:15px;box-shadow:0 5px 0 #dda632;font-size:19px;font-weight:1000;color:#463a2d;margin:16px 0 8px}.secondary{border:0;background:transparent;color:#766986;text-decoration:underline;font-size:14px;font-weight:850;display:block;min-height:36px;margin:auto;padding:6px 15px}
 .rules p{margin:10px 0;font-size:15px;line-height:1.42}.specials{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}.specials div{background:#f3f1e9;border-radius:12px;padding:9px 5px;text-align:center;font-weight:900;font-size:13px}.specials b{display:block;font-size:33px}
 .winner-icon{text-align:center;font-size:71px}.toast{position:fixed;left:50%;bottom:45px;z-index:200;transform:translate(-50%,14px);padding:11px 18px;border-radius:12px;background:#29334c;color:white;font-weight:900;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:90vw}.toast.show{opacity:1;transform:translate(-50%,0)}
+@keyframes turn-beacon{from{box-shadow:0 0 0 5px white,0 0 0 10px var(--accent),0 0 12px 3px color-mix(in srgb,var(--accent) 38%,transparent)}to{box-shadow:0 0 0 5px #fff,0 0 0 17px color-mix(in srgb,var(--accent) 72%,transparent),0 0 32px 13px color-mix(in srgb,var(--accent) 54%,transparent)}}
+@keyframes tap-bounce{from{translate:0 0}to{translate:0 -5px}}
 @keyframes pulse{to{box-shadow:0 0 0 7px color-mix(in srgb,var(--accent) 31%,transparent),0 12px 21px #2222}}@keyframes penalty{20%,70%{transform:translateY(-50%) rotate(-2deg)}40%,90%{transform:translateY(-50%) rotate(2deg)}}@keyframes land{from{transform:scale(1.18) rotateY(48deg);opacity:.2}to{transform:scale(1) rotateY(0);opacity:1}}@keyframes result-arrive{from{transform:translate(-50%,-45%) scale(.9);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
 @media(max-width:1050px){.stage{width:46%}.player-zone{width:24%;border-radius:17px;padding:5px}.brand small{display:none}.bar{min-height:54px}.logo{width:37px;height:37px}}
 @media(orientation:portrait),(max-width:680px){
  .bar{min-height:50px;padding:5px 7px}.logo{width:32px;height:32px;font-size:19px;border-radius:9px}.brand{gap:5px}.brand h1{font-size:clamp(10px,2.8vw,15px);max-width:205px}.mini{font-size:11px;padding:6px 7px;min-height:34px;border-width:1px}.mini .optional{display:none}#fullBtn{display:none}.actions{gap:3px}
- .board::before{display:none}.player-zone{width:47%;height:100px;left:2%;border-radius:13px;border-width:2px;padding:3px 4px;gap:2px;transform:none}.player-zone[data-side="right"]{left:51%;right:auto}.player-zone:active{transform:scale(.975)}.player-zone .seat-num{font-size:8px;top:3px;left:5px}.player-name{font-size:clamp(13px,3vw,20px);margin-top:8px}.player-count{padding:1px 6px;font-size:clamp(10px,2.4vw,13px);border-width:1px}.player-symbol{font-size:clamp(18px,4vw,28px)}.player-cue{font-size:clamp(9px,2.15vw,12px)}.player-zone.is-turn .player-cue{font-size:clamp(9px,2.15vw,12px)}.player-zone.penalty{animation:none}
- .stage{inset:25% 0 25%;height:50%;width:98%;gap:3px;padding:3px}.turn-badge{padding:2px 8px;border-width:1px}.turn-badge .cap{font-size:9px}.turn-badge .word{font-size:clamp(16px,4.8vw,28px)}.card-stack{height:clamp(108px,17vh,210px);width:clamp(101px,24vw,170px);margin:1px}.picture-card{border-radius:13px;border-width:2px}.picture-card .emoji{font-size:clamp(47px,11vw,82px)}.picture-card .card-word{font-size:clamp(12px,3vw,19px);margin-top:1px}.pile-count{font-size:10px}.status{font-size:clamp(11px,2.7vw,16px);min-height:18px}.status.hot{font-size:clamp(13px,3.3vw,20px)}.helptext{font-size:clamp(9px,2.2vw,12px)}.progress{height:7px}.bottom{min-height:25px;font-size:10px;padding:2px 5px;gap:6px}.result-panel{width:min(90%,350px);padding:13px;border-width:3px}.result-fast{font-size:clamp(17px,5.5vw,25px)}.result-loser{font-size:clamp(18px,6vw,30px)}.result-extra{font-size:13px}.result-wait{font-size:11px}
+ .board::before{display:none}.player-zone{width:47%;height:100px;left:2%;border-radius:13px;border-width:2px;padding:3px 4px;gap:2px;transform:none}.player-zone[data-side="right"]{left:51%;right:auto}.player-zone:active{transform:scale(.975)}.player-zone .seat-num{font-size:8px;top:3px;left:5px}.player-name{font-size:clamp(13px,3vw,20px);margin-top:8px}.player-count{padding:1px 6px;font-size:clamp(10px,2.4vw,13px);border-width:1px}.player-symbol{font-size:clamp(18px,4vw,28px)}.player-cue{font-size:clamp(9px,2.15vw,12px)}.player-zone.is-turn .player-cue{font-size:clamp(9px,2.15vw,12px)}.player-zone.penalty{animation:none;border-width:4px;box-shadow:0 0 0 3px #fff,0 0 0 7px #ed6077,0 0 18px #ed607788}.board.awaiting-draw .player-zone:not(.is-turn){opacity:.69}.player-zone.is-turn{border-width:3px;box-shadow:0 0 0 3px #fff,0 0 0 6px var(--accent),0 0 19px 6px color-mix(in srgb,var(--accent) 48%,transparent)}.player-zone.is-turn::after{font-size:9px;padding:2px 5px;top:3px;right:3px}.player-zone.is-turn .player-name{font-size:clamp(13px,3.1vw,20px);text-underline-offset:1px;text-decoration-thickness:2px}.player-zone.is-turn .player-symbol{animation:none}
+ .stage{inset:25% 0 25%;height:50%;width:98%;gap:3px;padding:3px}.turn-badge{padding:2px 8px;border-width:1px}.board.awaiting-draw .turn-badge{background:color-mix(in srgb,var(--turn-color,#ffca4a) 24%,white);border:4px solid var(--turn-color,#ffca4a);box-shadow:0 0 0 3px white,0 7px 20px color-mix(in srgb,var(--turn-color,#ffca4a) 25%,transparent)}
+.board.awaiting-draw .turn-badge .word{font-size:clamp(22px,2.75vw,38px)}
+.turn-badge .cap{font-size:9px}.turn-badge .word{font-size:clamp(16px,4.8vw,28px)}.card-stack{height:clamp(108px,17vh,210px);width:clamp(101px,24vw,170px);margin:1px}.picture-card{border-radius:13px;border-width:2px}.picture-card .emoji{font-size:clamp(47px,11vw,82px)}.picture-card .card-word{font-size:clamp(12px,3vw,19px);margin-top:1px}.pile-count{font-size:10px}.status{font-size:clamp(11px,2.7vw,16px);min-height:18px}.status.hot{font-size:clamp(13px,3.3vw,20px)}.helptext{font-size:clamp(9px,2.2vw,12px)}.progress{height:7px}.bottom{min-height:25px;font-size:10px;padding:2px 5px;gap:6px}
 }
-@media(max-height:620px) and (orientation:landscape){.bar{min-height:44px;padding:3px 8px}.logo{width:32px;height:32px;font-size:18px}.mini{min-height:31px;padding:4px 7px}.player-name{font-size:clamp(13px,1.5vw,18px)}.player-count{font-size:12px;padding:1px 6px}.player-symbol{font-size:23px}.player-cue{font-size:11px}.card-stack{height:clamp(100px,25vh,155px);width:clamp(90px,12vw,136px)}.picture-card .emoji{font-size:clamp(42px,6vw,66px)}.picture-card .card-word{font-size:14px;margin-top:1px}.turn-badge .word{font-size:clamp(16px,2vw,23px)}.stage{gap:2px}.status{font-size:13px;min-height:18px}.status.hot{font-size:18px}.bottom{min-height:25px}.result-panel{padding:12px}}
+@media(max-height:620px) and (orientation:landscape){.bar{min-height:44px;padding:3px 8px}.logo{width:32px;height:32px;font-size:18px}.mini{min-height:31px;padding:4px 7px}.player-name{font-size:clamp(13px,1.5vw,18px)}.player-count{font-size:12px;padding:1px 6px}.player-symbol{font-size:23px}.player-cue{font-size:11px}.card-stack{height:clamp(100px,25vh,155px);width:clamp(90px,12vw,136px)}.picture-card .emoji{font-size:clamp(42px,6vw,66px)}.picture-card .card-word{font-size:14px;margin-top:1px}.turn-badge .word{font-size:clamp(16px,2vw,23px)}.stage{gap:2px}.status{font-size:13px;min-height:18px}.status.hot{font-size:18px}.bottom{min-height:25px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -89,13 +97,7 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button
    <div class="progress" id="progress"><div id="progressFill"></div></div>
    <div class="helptext" id="helptext">Cuando coincida la carta con la palabra, ¡todos tocáis vuestra zona!</div>
   </section>
-  <div class="result-panel" id="resultPanel" role="status" aria-live="assertive" hidden>
-   <div class="result-tag" id="resultTag">¡COINCIDENCIA!</div>
-   <div class="result-fast" id="resultFast">⚡ Más rápido: —</div>
-   <div class="result-loser" id="resultLoser">📥 Recoge: —</div>
-   <div class="result-extra" id="resultExtra">Las cartas vuelven al jugador.</div>
-   <div class="result-wait" id="resultWait">Siguiente turno en 6 s</div>
-  </div>
+
  </main>
  <footer class="bottom"><span id="footerInfo">Pulsa tu zona cuando sea tu turno para sacar una carta.</span><span class="pill" id="modeInfo">Turnos manuales</span></footer>
 </div>
@@ -121,10 +123,10 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button
 <div class="overlay" id="rulesOverlay" role="dialog" aria-modal="true" aria-label="Reglas" hidden>
  <div class="modal"><h2>📖 Cómo se juega</h2>
  <div class="rules">
-  <p><b>1.</b> Se ilumina la zona del jugador al que le toca. <b>Él toca su propia zona para sacar una carta</b>; la carta vuela hasta el centro y se descubre al llegar. La palabra sigue el orden <b>Taco → Gato → Cabra → Queso → Pizza</b>.</p>
-  <p><b>2.</b> Si el dibujo coincide con la palabra que aparece arriba, <b>todos</b> tocan su propia zona cuanto antes. Si sale una carta especial, haced primero el gesto.</p>
-  <p><b>3.</b> Se muestra quién fue <b>el más rápido</b> y quién fue <b>el último</b>. El último recoge el montón y se ven las cartas volando a su zona. Si alguien toca cuando no hay coincidencia, recoge el montón por falsa alarma.</p>
-  <p><b>4.</b> El resultado permanece <b>6 segundos</b>. Después, toca el jugador indicado para sacar la siguiente carta. El que recoge vuelve a empezar diciendo «Taco».</p>
+  <p><b>1.</b> Se destaca claramente la zona del jugador al que le toca. <b>Él toca su propia zona para sacar una carta</b>; la carta vuela hasta el centro y se descubre al llegar. La palabra sigue el orden <b>Taco → Gato → Cabra → Queso → Pizza</b>.</p>
+  <p><b>2.</b> Cuando la carta se revela, <b>nadie recibe avisos</b>: mirad si el dibujo coincide con la palabra de arriba. Si coincide, <b>todos</b> tocan su propia zona cuanto antes. Con una carta especial, haced primero el gesto correspondiente.</p>
+  <p><b>3.</b> Al terminar la reacción, se ilumina brevemente quién fue el más rápido y quién recoge las cartas. El montón vuela a su zona, <b>sin carteles que paren la partida</b>. Una pulsación sin coincidencia hace recoger el montón.</p>
+  <p><b>4.</b> Si no coinciden, la carta permanece al menos <b>2,75 segundos</b> antes de indicar el siguiente jugador. La entrega del montón dura aproximadamente <b>1,5 segundos</b>. El que recoge vuelve a empezar por «Taco».</p>
   <p><b>5.</b> Para ganar hay que quedarse <b>sin cartas</b> y ser <b>el primero en tocar</b> en una coincidencia o especial.</p>
   <div class="specials"><div><b>🦍</b>Gorila<br>Golpea el pecho</div><div><b>🦫</b>Marmota<br>Golpea la mesa</div><div><b>🐋</b>Narval<br>Cuerno en la cabeza</div></div>
   <p><b>Adaptación para clase:</b> cada reacción se mide durante 7 segundos. Si varios no pulsan, recoge quien sacó la carta si está entre ellos; en otro caso, el primer no respondedor siguiendo los turnos. La pantalla no puede comprobar si los gestos se han hecho correctamente.</p>
@@ -153,11 +155,11 @@ const COLORS=[
  {main:'#e99b32',light:'#fff5dc'},{main:'#36adb4',light:'#e7fcff'},
  {main:'#d462a8',light:'#fff0fa'},{main:'#799d38',light:'#f6fbdc'}
 ];
-const RACE_MS=7000, RESULT_MS=6000, DEAL_MS=760;
+const RACE_MS=7000, RESULT_MS=1550, NON_MATCH_MS=2750, DEAL_MS=760;
 const $=id=>document.getElementById(id);
 const board=$('board'),zones=$('playerZones'),picture=$('pictureCard');
 const state={count:4,cards:12,players:[],pile:[],turn:0,wordIndex:0,phase:'setup',currentCard:null,currentWord:'',dealer:0,
- responses:new Map(),roundStart:0,roundTimeout:0,raf:0,resultTimer:0,waitInterval:0,extraTimers:[],special:true,voice:false,sound:true,music:true,animationId:0,finalDuel:false};
+ responses:new Map(),roundStart:0,roundTimeout:0,raf:0,resultTimer:0,waitInterval:0,extraTimers:[],special:true,voice:false,sound:true,music:true,animationId:0,finalDuel:false,penaltyId:-1,fastestId:-1,penaltyCards:0};
 let audioCtx=null,musicLoop=0,musicStep=0,musicNextTime=0,musicMaster=null,toastTimer=0;
 const prefersReduced=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function shuffle(items){const a=items.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -202,20 +204,20 @@ function layoutSeats(){const portrait=window.matchMedia('(orientation: portrait)
  }else{const leftN=Math.ceil(people.length/2),rightN=people.length-leftN;for(const p of people){const left=p.id%2===0;const row=Math.floor(p.id/2),n=left?leftN:rightN;
  p.zone.dataset.side=left?'left':'right';p.zone.style.left=left?'1%':'auto';p.zone.style.right=left?'auto':'1%';p.zone.style.width='';p.zone.style.top=`${((row+.5)/n)*100}%`;p.zone.style.height=`calc(${100/n}% - 13px)`;}
  }}
-function refreshZones(){for(const p of state.players){if(!p.zone)continue;const z=p.zone;const hand=p.hand.length;
- z.querySelector('.player-count').textContent=`${hand} carta${hand===1?'':'s'}`;z.classList.toggle('empty',hand===0);
+function refreshZones(){board.classList.toggle('awaiting-draw',state.phase==='ready');for(const p of state.players){if(!p.zone)continue;const z=p.zone;const hand=p.hand.length;
+ z.querySelector('.player-count').textContent=`${hand} carta${hand===1?'':'s'}`;z.classList.toggle('empty',hand===0);z.classList.toggle('penalty',state.phase==='result'&&p.id===state.penaltyId);z.classList.toggle('first',state.phase==='result'&&p.id===state.fastestId);
  z.classList.toggle('is-turn',state.phase==='ready'&&state.turn===p.id);
- z.classList.toggle('can-react',state.phase==='reaction'&&!state.responses.has(p.id));
+ z.classList.remove('can-react');
  z.classList.toggle('has-reacted',state.phase==='reaction'&&state.responses.has(p.id));
  const symbol=z.querySelector('.player-symbol'),cue=z.querySelector('.player-cue');
- if(state.phase==='ready'&&state.turn===p.id){symbol.textContent='🃏';cue.textContent='👆 ¡SACA CARTA!';}
- else if(state.phase==='reaction'){symbol.textContent=state.responses.has(p.id)?'✅':'✋';cue.textContent=state.responses.has(p.id)?`${Math.round(state.responses.get(p.id))} ms`:'¡PULSA YA!';}
- else if(state.phase==='result'){symbol.textContent='🃏';cue.textContent='ESPERA RESULTADO';}
+ if(state.phase==='ready'&&state.turn===p.id){symbol.textContent='🫵';cue.textContent='🃏 ¡SACA TU CARTA!';}
+ else if(state.phase==='reaction'){symbol.textContent=state.responses.has(p.id)?'✅':'🃏';cue.textContent=state.responses.has(p.id)?'TOQUE REGISTRADO':'ESPERA TU TURNO';}
+ else if(state.phase==='result'){if(p.id===state.penaltyId){symbol.textContent='📥';cue.textContent=`RECIBE +${state.penaltyCards} CARTAS`;}else if(p.id===state.fastestId){symbol.textContent='🥇';cue.textContent='EL MÁS RÁPIDO';}else{symbol.textContent='🃏';cue.textContent='ESPERA TU TURNO';}}
  else if(state.phase==='dealing'){symbol.textContent='🃏';cue.textContent='SALIENDO CARTA…';}
  else if(state.phase==='won'){symbol.textContent='🏆';cue.textContent='FIN DE PARTIDA';}
  else{symbol.textContent='🃏';cue.textContent='ESPERA TU TURNO';}}
 }
-function showNextTurn(){const next=nextActive(state.turn);if(next<0){startFinalDuel();return;}state.turn=next;state.phase='ready';$('turnCaption').textContent='LE TOCA SACAR CARTA A';$('spokenWord').textContent=state.players[next].name.toUpperCase();$('status').textContent='👆 ¡Toca tu zona para sacar la carta!';$('status').className='status';$('helptext').textContent='Los demás esperan. Solo toca el jugador señalado.';$('footerInfo').textContent=`Turno de ${state.players[next].name}: pulsa su zona para lanzar la carta.`;refreshZones();}
+function showNextTurn(){const next=nextActive(state.turn);if(next<0){startFinalDuel();return;}state.turn=next;state.phase='ready';state.penaltyId=-1;state.fastestId=-1;board.style.setProperty('--turn-color',state.players[next].color.main);$('turnCaption').textContent='🃏 ¡TURNO DE!';$('spokenWord').textContent=state.players[next].name.toUpperCase();$('status').textContent=`👆 ¡${state.players[next].name}, toca tu zona!`;$('status').className='status';$('helptext').textContent='Los demás esperan. Solo toca el jugador señalado.';$('footerInfo').textContent=`Turno de ${state.players[next].name}: pulsa su zona para lanzar la carta.`;refreshZones();}
 function showCard(type){picture.className='picture-card';picture.dataset.type=type;picture.classList.add('pop');$('cardEmoji').textContent=TYPES[type].emoji;$('cardLabel').textContent=TYPES[type].word;}
 function pileText(){$('pileCount').textContent=`Montón: ${state.pile.length} carta${state.pile.length===1?'':'s'}`;}
 function animateDeal(index,onFinish){const rect=state.players[index].zone.getBoundingClientRect(),target=$('cardStack').getBoundingClientRect();
@@ -228,20 +230,19 @@ function animateDeal(index,onFinish){const rect=state.players[index].zone.getBou
  a.onfinish=done;t(done,DEAL_MS+100);
 }
 function animateCollect(index,count){if(prefersReduced())return;const src=$('cardStack').getBoundingClientRect(),target=state.players[index].zone.getBoundingClientRect();const w=68,h=88;
- for(let j=0;j<Math.min(9,Math.max(2,count));j++){t(()=>{if(state.phase!=='result')return;
+ for(let j=0;j<Math.min(7,Math.max(2,count));j++){t(()=>{if(state.phase!=='result')return;
  const el=document.createElement('div');el.className='fly-card payout';el.textContent='🃏';el.style.left=`${src.left+src.width/2-w/2}px`;el.style.top=`${src.top+src.height/2-h/2}px`;document.body.appendChild(el);
  const dx=(target.left+target.width/2)-(src.left+src.width/2),dy=(target.top+target.height/2)-(src.top+src.height/2);
  if(!el.animate){t(()=>el.remove(),450);return;}
- const a=el.animate([{transform:'translate(0,0) rotate(0deg) scale(1)',opacity:1},{transform:`translate(${dx*.58}px,${dy*.42-40}px) rotate(${j%2?16:-16}deg) scale(.92)`,opacity:1,offset:.5},{transform:`translate(${dx}px,${dy}px) rotate(${j%2?-14:14}deg) scale(.48)`,opacity:.3}],{duration:890,easing:'cubic-bezier(.24,.8,.3,1)',fill:'forwards'});
- a.onfinish=()=>el.remove();t(()=>el.remove(),1100);
- },j*95);}
+ const a=el.animate([{transform:'translate(0,0) rotate(0deg) scale(1)',opacity:1},{transform:`translate(${dx*.58}px,${dy*.42-40}px) rotate(${j%2?16:-16}deg) scale(.92)`,opacity:1,offset:.5},{transform:`translate(${dx}px,${dy}px) rotate(${j%2?-14:14}deg) scale(.48)`,opacity:.3}],{duration:720,easing:'cubic-bezier(.24,.8,.3,1)',fill:'forwards'});
+ a.onfinish=()=>el.remove();t(()=>el.remove(),900);
+ },j*66);}
 }
 function press(id){if(state.phase==='setup'||state.phase==='dealing'||state.phase==='result'||state.phase==='won')return;
  if(state.phase==='ready'){if(id!==state.turn){tone(230,.11,'triangle',.026);toast(`Ahora le toca a ${state.players[state.turn].name}.`,1200);return;}flipFrom(id);return;}
  if(state.phase==='card'){if(state.finalDuel)return;tone(155,.27,'sawtooth',.062);applyPenalty(id,`¡Falsa alarma! ${state.players[id].name} pulsó sin coincidencia.`,null);return;}
  if(state.phase==='reaction'){if(state.responses.has(id))return;state.responses.set(id,Math.max(0,performance.now()-state.roundStart));tone(470+id*65,.085,'sine',.055);
- if(state.responses.size===state.players.length)finishRace();else{const first=[...state.responses.entries()].sort((a,b)=>a[1]-b[1])[0];$('helptext').textContent=`⚡ Primero: ${state.players[first[0]].name} · ${state.responses.size} de ${state.players.length} han pulsado`;
- refreshZones();}return;}
+ if(state.responses.size===state.players.length)finishRace();else refreshZones();return;}
 }
 function flipFrom(id){resetClocks();const p=state.players[id];if(!p.hand.length){state.turn=(id+1)%state.players.length;showNextTurn();return;}
  const type=p.hand.shift(),spoken=WORDS[state.wordIndex];state.currentCard=type;state.currentWord=spoken;state.dealer=id;state.wordIndex=(state.wordIndex+1)%WORDS.length;
@@ -249,8 +250,15 @@ function flipFrom(id){resetClocks();const p=state.players[id];if(!p.hand.length)
  $('turnCaption').textContent=`CARTA DE ${p.name.toUpperCase()}`;$('spokenWord').textContent=spoken;$('status').textContent='🃏 La carta viaja al centro…';$('status').className='status';$('helptext').textContent='Mirad la carta cuando aparezca.';pileText();refreshZones();tone(365,.10,'triangle',.045);
  const animID=++state.animationId;animateDeal(id,()=>{if(animID!==state.animationId||state.phase!=='dealing')return;showCard(type);say(spoken);
  const match=TYPES[type].word===spoken, special=!!TYPES[type].instruction;
- if(match||special){state.phase='reaction';state.responses=new Map();state.roundStart=performance.now();$('turnCaption').textContent=special?'¡CARTA ESPECIAL!':'¡COINCIDENCIA!';$('status').textContent=special?TYPES[type].instruction:'⚡ ¡COINCIDEN! ¡PULSAD TODOS!';$('status').className='status hot';$('helptext').textContent=special?'Haced el gesto y tocad vuestra zona.':'¡Tocad vuestra zona lo más rápido posible!';$('progress').style.display='block';tone(750,.16,'square',.032);t(()=>tone(965,.13,'square',.025),120);updateProgress();state.roundTimeout=setTimeout(finishRace,RACE_MS);refreshZones();
- }else{state.phase='card';$('turnCaption').textContent='PALABRA DEL TURNO';$('status').textContent='No coinciden. ¡Siguiente jugador!';$('status').className='status';$('helptext').textContent='No pulses si no hay coincidencia.';refreshZones();t(()=>{if(state.phase==='card')showNextTurn();},850);}
+ // El juego NO da pistas cuando hay coincidencia: misma pantalla, texto y sonido.
+ $('turnCaption').textContent='PALABRA DEL TURNO';
+ $('status').textContent='Observa la carta';$('status').className='status';
+ $('helptext').textContent='Compara el dibujo con la palabra. ¡Atentos!';
+ if(match||special){state.phase='reaction';state.responses=new Map();state.roundStart=performance.now();
+   // Sin barra, sonido, destellos, mensajes ni animaciones que revelen el acierto.
+   state.roundTimeout=setTimeout(finishRace,RACE_MS);refreshZones();
+ }else{state.phase='card';refreshZones();t(()=>{if(state.phase==='card')showNextTurn();},NON_MATCH_MS);}
+
  });}
 function updateProgress(){if(state.phase!=='reaction')return;const remaining=Math.max(0,1-(performance.now()-state.roundStart)/RACE_MS);$('progressFill').style.width=`${remaining*100}%`; $('progressFill').style.background=remaining<.33?'#e45d68':'#f6ae42';state.raf=requestAnimationFrame(updateProgress);}
 function chooseNonResponder(missed){const dealer=missed.find(p=>p.id===state.dealer);if(dealer)return dealer;for(let step=1;step<=state.players.length;step++){const id=(state.dealer+step)%state.players.length;const p=missed.find(x=>x.id===id);if(p)return p;}return missed[0];}
@@ -261,29 +269,34 @@ function finishRace(){if(state.phase!=='reaction')return;clearTimeout(state.roun
  const missed=state.players.filter(p=>!state.responses.has(p.id));let loser;
  if(missed.length)loser=chooseNonResponder(missed);else loser=responders[responders.length-1];
  let detail=missed.length?`${missed.length} jugador${missed.length===1?' no pulsó':'es no pulsaron'} a tiempo.`:`${loser.name} fue el último en pulsar.`;
- applyPenalty(loser.id,detail,first?first.name:null);
+ applyPenalty(loser.id,detail,first?first.id:null);
 }
-function applyPenalty(id,reason,fastest){if(state.phase==='won'||state.phase==='result')return;const p=state.players[id],n=state.pile.length;resetClocks();p.hand.push(...state.pile);state.pile=[];state.wordIndex=0;state.turn=id;state.phase='result';pileText();
- $('resultTag').textContent=fastest?'⚡ RESULTADO DE LA COINCIDENCIA':'⚠️ PENALIZACIÓN';
- $('resultFast').textContent=fastest?`⚡ Más rápido: ${fastest}`:'⚠️ ¡Falsa alarma!';
- $('resultLoser').textContent=`📥 Recoge: ${p.name}`;
- $('resultExtra').textContent=`${reason} ${p.name} recibe ${n} carta${n===1?'':'s'} del montón.`;
- $('resultWait').textContent='Siguiente turno en 6 segundos';$('resultPanel').hidden=false;
- $('turnCaption').textContent='RESULTADO DEL TURNO';$('status').textContent=`${p.name} recoge el montón`;$('status').className='status';$('helptext').textContent='Esperad: las cartas vuelan al jugador.';
- $('footerInfo').textContent=`${p.name} recibe ${n} cartas y sacará la siguiente. La palabra vuelve a TACO.`;
- refreshZones();p.zone.classList.add('penalty');if(fastest){const fast=state.players.find(x=>x.name===fastest);if(fast)fast.zone.classList.add('first');}tone(300,.25,'triangle',.08);t(()=>tone(245,.31,'triangle',.06),170);
- animateCollect(id,n);const end=Date.now()+RESULT_MS;state.waitInterval=setInterval(()=>{$('resultWait').textContent=`Siguiente turno en ${Math.max(0,Math.ceil((end-Date.now())/1000))} segundos`;},180);
- state.resultTimer=setTimeout(()=>{if(state.phase!=='result')return;clearInterval(state.waitInterval);$('resultPanel').hidden=true;state.players.forEach(x=>x.zone.classList.remove('penalty','first'));showNextTurn();},RESULT_MS);
+function applyPenalty(id,reason,fastestId){
+ if(state.phase==='won'||state.phase==='result')return;
+ const p=state.players[id],n=state.pile.length;
+ resetClocks();p.hand.push(...state.pile);state.pile=[];state.wordIndex=0;state.turn=id;
+ state.phase='result';state.penaltyId=id;state.penaltyCards=n;
+ state.fastestId=Number.isInteger(fastestId)?fastestId:-1;
+ pileText();
+ // Sin cartel central: solo se señala al jugador que recoge y vuelan las cartas.
+ $('turnCaption').textContent='CARTAS RECOGIDAS';
+ $('status').textContent=`📥 ${p.name} recoge ${n} carta${n===1?'':'s'}`;
+ $('status').className='status';
+ $('helptext').textContent=state.fastestId>=0?`🥇 ${state.players[state.fastestId].name} fue el más rápido.`:'Toque equivocado: recoge el montón.';
+ $('footerInfo').textContent=`${p.name} recibe ${n} cartas y vuelve a sacar con TACO.`;
+ refreshZones();tone(300,.20,'triangle',.06);
+ animateCollect(id,n);
+ state.resultTimer=setTimeout(()=>{if(state.phase!=='result')return;showNextTurn();},RESULT_MS);
 }
-function declareWinner(id){resetClocks();state.phase='won';musicStop();const p=state.players[id];$('resultPanel').hidden=true;
+function declareWinner(id){resetClocks();state.phase='won';musicStop();const p=state.players[id];
  $('turnCaption').textContent='🏆 ¡PARTIDA TERMINADA!';$('spokenWord').textContent=p.name.toUpperCase();$('status').textContent=`🎉 ¡${p.name} HA GANADO!`;$('status').className='status hot';$('helptext').textContent='¡Se quedó sin cartas y fue el primero en tocar!';$('footerInfo').textContent=`Ganador: ${p.name}`;
  $('winTitle').textContent=`¡${p.name} HA GANADO!`;$('winText').textContent='Se quedó sin cartas y fue el primero en reaccionar. ¡Felicidades!';refreshZones();tone(650,.31,'sine',.09);t(()=>tone(840,.31,'sine',.09),240);t(()=>tone(1040,.48,'sine',.10),490);t(()=>overlay('winOverlay',true),1400);
 }
 function startFinalDuel(){state.phase='card';state.finalDuel=true;state.currentCard='taco';state.currentWord='TACO';state.responses=new Map();showCard('taco');$('turnCaption').textContent='⚡ RETO FINAL';$('spokenWord').textContent='TACO';$('status').textContent='¡Todos sin cartas! ¡Primero en tocar gana!';$('status').className='status hot';$('helptext').textContent='¡Tocad vuestra zona ahora!';$('progress').style.display='block';state.phase='reaction';state.roundStart=performance.now();updateProgress();state.roundTimeout=setTimeout(finishRace,RACE_MS);refreshZones();}
 function initGame(){resetClocks();++state.animationId;state.special=$('specialOption').checked;state.voice=$('voiceOption').checked;state.music=$('musicOption').checked;musicStop();createPlayers();state.pile=[];state.turn=0;state.wordIndex=0;state.phase='ready';state.currentCard=null;state.finalDuel=false;
- picture.className='picture-card cover';picture.removeAttribute('data-type');$('cardEmoji').textContent='🌮';$('cardLabel').textContent='¡A JUGAR!';$('resultPanel').hidden=true;pileText();overlay('setupOverlay',false);overlay('winOverlay',false);
+ picture.className='picture-card cover';picture.removeAttribute('data-type');$('cardEmoji').textContent='🌮';$('cardLabel').textContent='¡A JUGAR!';pileText();overlay('setupOverlay',false);overlay('winOverlay',false);
  renderPlayers();showNextTurn();musicToggle(state.music);if(state.sound)initAudio();}
-function newGameSetup(){resetClocks();++state.animationId;musicStop();state.phase='setup';overlay('winOverlay',false);overlay('setupOverlay',true);$('resultPanel').hidden=true;}
+function newGameSetup(){resetClocks();++state.animationId;musicStop();state.phase='setup';overlay('winOverlay',false);overlay('setupOverlay',true);}
 function showRules(){overlay('rulesOverlay',true);}function hideRules(){overlay('rulesOverlay',false);}
 $('countChoices').addEventListener('click',e=>{const b=e.target.closest('button[data-num]');if(!b)return;state.count=Number(b.dataset.num);showNames();});
 $('speedChoices').addEventListener('click',e=>{const b=e.target.closest('button[data-cards]');if(!b)return;state.cards=Number(b.dataset.cards);[...$('speedChoices').querySelectorAll('button')].forEach(x=>x.classList.toggle('selected',Number(x.dataset.cards)===state.cards));});
