@@ -663,17 +663,18 @@ function layoutSeats(){const portrait=window.matchMedia('(orientation: portrait)
  p.zone.dataset.side=left?'left':'right';p.zone.style.left=left?'1%':'auto';p.zone.style.right=left?'auto':'1%';p.zone.style.width='';p.zone.style.top=`${((row+.5)/n)*100}%`;p.zone.style.height=`calc(${100/n}% - 13px)`;}
  }}
 function refreshZones(){board.classList.toggle('awaiting-draw',state.phase==='ready');for(const p of state.players){if(!p.zone)continue;const z=p.zone;const hand=p.hand.length;
- z.querySelector('.player-count').textContent=`${hand} carta${hand===1?'':'s'}`;z.classList.toggle('empty',hand===0);z.classList.toggle('champion',state.phase==='won'&&p.id===state.winnerId);z.classList.toggle('penalty',state.phase==='result'&&p.id===state.penaltyId);z.classList.toggle('first',state.phase==='result'&&p.id===state.fastestId);
+ z.querySelector('.seat-num').textContent=tx('JUGADOR ','玩家 ')+(p.id+1);
+  z.querySelector('.player-count').textContent=cardCount(hand);z.classList.toggle('empty',hand===0);z.classList.toggle('champion',state.phase==='won'&&p.id===state.winnerId);z.classList.toggle('penalty',state.phase==='result'&&p.id===state.penaltyId);z.classList.toggle('first',state.phase==='result'&&p.id===state.fastestId);
  z.classList.toggle('is-turn',state.phase==='ready'&&state.turn===p.id);
  z.classList.remove('can-react');
  z.classList.toggle('has-reacted',state.phase==='reaction'&&state.responses.has(p.id));
  const symbol=z.querySelector('.player-symbol'),cue=z.querySelector('.player-cue');
- if(state.phase==='ready'&&state.turn===p.id){symbol.textContent='🫵';cue.textContent='♫ ¡SACA TU CARTA!';}
- else if(state.phase==='reaction'){symbol.textContent=state.responses.has(p.id)?'✅':'🃏';cue.textContent=state.responses.has(p.id)?'TOQUE REGISTRADO':'ESPERA TU TURNO';}
- else if(state.phase==='result'){if(p.id===state.penaltyId){symbol.textContent='📥';cue.textContent=`RECIBE +${state.penaltyCards} CARTAS`;}else if(p.id===state.fastestId){symbol.textContent='🥇';cue.textContent='EL MÁS RÁPIDO';}else{symbol.textContent='🃏';cue.textContent='ESPERA TU TURNO';}}
- else if(state.phase==='dealing'){symbol.textContent='🃏';cue.textContent='SALIENDO CARTA…';}
- else if(state.phase==='won'){symbol.textContent=p.id===state.winnerId?'🏆':'🃏';cue.textContent=p.id===state.winnerId?'¡CAMPEÓN!':'PARTIDA TERMINADA';}
- else{symbol.textContent='🃏';cue.textContent='ESPERA TU TURNO';}}
+ if(state.phase==='ready'&&state.turn===p.id){symbol.textContent='🫵';cue.textContent=tx('♫ ¡SACA TU CARTA!','♫ 請出牌！');}
+ else if(state.phase==='reaction'){symbol.textContent=state.responses.has(p.id)?'✅':'🃏';cue.textContent=state.responses.has(p.id)?tx('TOQUE REGISTRADO','已記錄觸碰'):tx('ESPERA TU TURNO','等候輪次');}
+ else if(state.phase==='result'){if(p.id===state.penaltyId){symbol.textContent='📥';cue.textContent=tx('RECIBE +'+state.penaltyCards+' CARTAS','收下 +'+state.penaltyCards+' 張牌');}else if(p.id===state.fastestId){symbol.textContent='🥇';cue.textContent=tx('EL MÁS RÁPIDO','反應最快');}else{symbol.textContent='🃏';cue.textContent=tx('ESPERA TU TURNO','等候輪次');}}
+ else if(state.phase==='dealing'){symbol.textContent='🃏';cue.textContent=tx('SALIENDO CARTA…','正在出牌…');}
+ else if(state.phase==='won'){symbol.textContent=p.id===state.winnerId?'🏆':'🃏';cue.textContent=p.id===state.winnerId?tx('¡CAMPEÓN!','冠軍！'):tx('PARTIDA TERMINADA','遊戲已結束');}
+ else{symbol.textContent='🃏';cue.textContent=tx('ESPERA TU TURNO','等候輪次');}}
 }
 function showNextTurn(){if(state.phase==='won')return;
  const empty=state.players.find(p=>p.hand.length===0);if(empty){declareWinner(empty.id);return;}
@@ -707,7 +708,7 @@ function showCard(type){
    ' C'+(bx+19)+' '+(y-20)+' '+(bx+5)+' '+(y-15)+' '+bx+' '+(y-9)+
    '" fill="none" stroke="#182e50" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>';
  }
- const name=state.showCardName?displayNote(note).replace('⁵',' (agudo)'):'nota musical sin nombre';
+ const name=state.showCardName?displayNote(note).replace('⁵',tx(' (agudo)','（高音）')):tx('nota musical sin nombre','不顯示音名的音符');
  $('cardEmoji').innerHTML=
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 166" role="img" aria-label="'+name+' en pentagrama (referencia de clave de sol)">'+
   '<g stroke="#557090" stroke-width="2.2" stroke-linecap="round">'+lines+'</g>'+
@@ -717,7 +718,7 @@ function showCard(type){
   '</svg>';
  $('cardLabel').textContent=state.showCardName?displayNote(note):'';
 }
-function pileText(){$('pileCount').textContent=`Montón: ${state.pile.length} carta${state.pile.length===1?'':'s'}`;}
+function pileText(){$('pileCount').textContent=tx('Montón: '+cardCount(state.pile.length),'牌堆：'+state.pile.length+' 張牌');}
 function animateDeal(index,onFinish){const rect=state.players[index].zone.getBoundingClientRect(),target=$('cardStack').getBoundingClientRect();
  const el=document.createElement('div');el.className='fly-card';el.textContent='';const w=100,h=130;
  el.style.left=`${rect.left+rect.width/2-w/2}px`;el.style.top=`${rect.top+rect.height/2-h/2}px`;document.body.appendChild(el);
