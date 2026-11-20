@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#ffedb8">
-<title>Taco Gato Cabra Queso Pizza — Táctil (2–8 jugadores) · Victoria automática</title>
+<meta name="theme-color" content="#101b3a">
+<title>DO · RE · MI · FA · SOL — Juego de oído musical</title>
 <style>
 :root{--ink:#27314b;--yellow:#ffce4b;--cream:#fff7df;--paper:#fffdf7}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
@@ -89,16 +89,95 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button
 }
 @media(max-height:620px) and (orientation:landscape){.bar{min-height:44px;padding:3px 8px}.logo{width:32px;height:32px;font-size:18px}.mini{min-height:31px;padding:4px 7px}.player-name{font-size:clamp(13px,1.5vw,18px)}.player-count{font-size:12px;padding:1px 6px}.player-symbol{font-size:23px}.player-cue{font-size:11px}.card-stack{height:clamp(100px,25vh,155px);width:clamp(90px,12vw,136px)}.picture-card .emoji{font-size:clamp(42px,6vw,66px)}.picture-card .card-word{font-size:14px;margin-top:1px}.turn-badge .word{font-size:clamp(16px,2vw,23px)}.stage{gap:2px}.status{font-size:13px;min-height:18px}.status.hot{font-size:18px}.bottom{min-height:25px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* Edición musical: escenario nocturno, violeta y turquesa. */
+:root{--ink:#f6f9ff;--yellow:#50e4d9;--cream:#162143;--paper:#111d40}
+html,body{background:#080f26;color:#f6f9ff}
+.app{background:radial-gradient(ellipse at 50% 50%,#283764,#17234a 52%,#0a1430 95%)}
+.bar{background:#0b1735e8;border-color:#3e4f7a;color:#f7fbff;box-shadow:0 5px 22px #0005}
+.brand h1{letter-spacing:.075em;color:#fff}
+.brand small{color:#b1c1e5}
+.logo{background:linear-gradient(135deg,#35d6d1,#9a85ff);box-shadow:0 4px 0 #2a637b;color:#101b40;font-weight:1000}
+.mini{color:#edf9ff;border-color:#455a82;background:#192848}
+.mini.on{background:#244f59;border-color:#5cdec9}
+.board::before{border-color:#5474af60}
+.player-zone{background:color-mix(in srgb,var(--accent) 17%,#101f41);color:#f9fbff;box-shadow:0 5px 0 #08132c,0 11px 24px #0008}
+.player-zone.is-turn{background:color-mix(in srgb,var(--accent) 30%,#13264b);filter:none;box-shadow:0 0 0 4px #182645,0 0 0 10px var(--accent),0 0 32px color-mix(in srgb,var(--accent) 40%,transparent)}
+.player-zone.is-turn .player-name,.player-zone.is-turn .player-cue{color:#fff}
+.player-zone .player-cue,.player-zone .seat-num{color:var(--accent)}
+.player-zone .player-count{background:#1a2a4a;color:#eafaff;border-color:var(--accent)}
+.player-zone.has-reacted{background:#174b4e;border-color:#4ae6c5}
+.player-zone.penalty{background:#51213d}
+.player-zone.champion{background:#413775}
+.turn-badge{background:#172a4d;border-color:#566f9f;box-shadow:0 6px 19px #0007;color:#e9f8ff}
+.board.awaiting-draw .turn-badge{background:#142b50;border-color:var(--turn-color,#6be7db)}
+.turn-badge .cap{color:#b1bfe2}
+.turn-badge .word{color:#f4fcff;letter-spacing:.04em}
+.card-stack{filter:drop-shadow(0 15px 22px #0008)}
+.card-stack::before,.card-stack::after{background:#26345b;border-color:#4c689e;box-shadow:0 9px 18px #0007}
+.picture-card{background:#f6fbff;border:5px solid #80bbed;color:#22385f;box-shadow:0 6px 0 #12264d,0 14px 27px #0008}
+.picture-card::before{background:#fff8}
+.picture-card.cover{background:linear-gradient(135deg,#343879,#2babae);border-color:#9ae6f4;color:#fff}
+.picture-card.cover .emoji{font-size:clamp(58px,6vw,94px);color:#fff;text-shadow:0 6px #122e62}
+.picture-card[data-type=do]{background:linear-gradient(140deg,#fff,#dbf8ff);border-color:#4ecbd5}
+.picture-card[data-type=re]{background:linear-gradient(140deg,#fff,#e6e3ff);border-color:#9a94f6}
+.picture-card[data-type=mi]{background:linear-gradient(140deg,#fff,#ffe6f2);border-color:#fb8cbe}
+.picture-card[data-type=fa]{background:linear-gradient(140deg,#fff,#fff1d8);border-color:#ffb563}
+.picture-card[data-type=sol]{background:linear-gradient(140deg,#fff,#e0f9e8);border-color:#84d095}
+.picture-card .emoji{display:grid;place-items:center;width:100%;max-width:190px;filter:none}
+.picture-card .emoji svg{width:100%;max-height:126px;filter:drop-shadow(0 2px #fff8)}
+.picture-card .card-word{font-size:clamp(29px,3.1vw,43px);letter-spacing:.13em;color:#1b2a4b;text-shadow:0 2px #fff9}
+.picture-card.cover .card-word{color:#fff;font-size:clamp(13px,1.6vw,22px);letter-spacing:.03em}
+.picture-card.pop{animation:music-reveal .55s cubic-bezier(.15,1.5,.2,1)}
+@keyframes music-reveal{0%{transform:rotateY(80deg) scale(.68);opacity:.35;filter:blur(4px)}70%{transform:rotateY(-8deg) scale(1.06);opacity:1;filter:blur(0)}100%{transform:rotateY(0) scale(1)}}
+.stage.note-playing .card-stack::before{animation:sonic-ring .82s ease-out}
+@keyframes sonic-ring{0%{box-shadow:0 0 0 0 #61e9ffc0,0 0 0 0 #9b88ff9c}100%{box-shadow:0 0 0 36px #61e9ff00,0 0 0 64px #9b88ff00}}
+.pile-count,.helptext{color:#aebfe3}
+.status{color:#f0f8ff}.status.hot{color:#80f9df}
+.fly-card{background:linear-gradient(135deg,#383c86,#2bb6ba);border-color:#83e8ef;color:#fff;box-shadow:0 9px 21px #0007}
+.bottom{background:#0a1634d9;border-color:#2c4169;color:#b7c9e4}
+.pill{background:#1a2d51;border-color:#4b6791;color:#d8faff}
+.overlay{background:#07112ac4;backdrop-filter:blur(11px)}
+.modal{background:linear-gradient(145deg,#223158,#121f3d);border:2px solid #6d81b4;color:#f4faff;box-shadow:0 20px 60px #000b}
+.modal h2{color:#effcff}.lead,.setting-title{color:#c2d4ef}
+.choice{background:#1b2d4c;border-color:#506183;color:#f2f9ff}
+.choice.selected{background:#2e566d;border-color:#63e8dc;color:#efffff}
+.name-field{background:#1a2c4c;border-color:#4b5d81}
+.name-field input{color:#fff}
+.primary{background:linear-gradient(110deg,#50e5d4,#8ba6ff);color:#0c2842;box-shadow:0 5px 0 #2c5c84}
+.secondary{color:#bae4f5}
+.practice{margin:12px 0;padding:11px;background:#0e1e3e;border:1px solid #40567c;border-radius:15px}
+.practice .setting-title{text-align:center;margin:2px 0 8px}
+.practice-notes{display:flex;gap:7px;justify-content:center}
+.practice-notes button{flex:1;min-height:46px;min-width:0;border:2px solid #9eccef;border-radius:10px;background:linear-gradient(150deg,#f8fdff,#cfe9ff);color:#172c4c;font-weight:1000}
+.practice-notes button:active{transform:translateY(3px)}
+.practice-help{color:#adc5e4;font-size:12px;text-align:center;margin:7px 0 0}
+.rules p{color:#e8f4ff;line-height:1.5}
+.winner-overlay{background:radial-gradient(circle at 50% 48%,#51448fa8,#0a1736e8 83%)}
+.winner-modal{background:linear-gradient(140deg,#283c68,#152643);border:4px solid #7ee3cf}
+.winner-modal h2{color:#c1fff5;text-shadow:none}
+.winner-modal .lead{color:#d4edff}
+.win-zero{background:#254d59;border-color:#76e8da;color:#e6fffc}
+.win-subtitle{color:#88ecf4}
+@media(max-width:680px),(orientation:portrait){
+ .brand h1{font-size:clamp(11px,2.6vw,16px);letter-spacing:.015em}
+ .picture-card .emoji svg{max-height:78px}
+ .picture-card .card-word{font-size:clamp(24px,6vw,33px)}
+ .picture-card.cover .card-word{font-size:clamp(12px,2.5vw,16px)}
+ .player-zone.is-turn .player-name{color:#fff}
+}
+@media(max-height:620px) and (orientation:landscape){.picture-card .emoji svg{max-height:82px}.picture-card .card-word{font-size:26px}}
+@media(prefers-reduced-motion:reduce){.stage.note-playing .card-stack::before{animation:none}}
+
 </style>
 </head>
 <body>
 <div class="app" id="app">
  <header class="bar">
-  <div class="brand"><div class="logo" aria-hidden="true">🌮</div><div><h1>TACO · GATO · CABRA · QUESO · PIZZA</h1><small>Pantalla táctil · 2 a 8 jugadores · Cada niño saca su propia carta</small></div></div>
+  <div class="brand"><div class="logo" aria-hidden="true">♫</div><div><h1>DO · RE · MI · FA · SOL</h1><small>Juego de oído musical · 2 a 8 jugadores</small></div></div>
   <div class="actions">
    <button class="mini" id="rulesBtn" title="Instrucciones">❔ <span class="optional">Reglas</span></button>
-   <button class="mini on" id="musicBtn" title="Activar o desactivar música">♫ Música</button>
-   <button class="mini on" id="soundBtn" title="Efectos de sonido">🔊</button>
+   <button class="mini" id="replayBtn" type="button" title="Volver a escuchar la nota">♫ Repetir</button>
    <button class="mini" id="fullBtn" title="Pantalla completa">⛶ <span class="optional">Pantalla</span></button>
    <button class="mini" id="restartBtn" title="Nueva partida">↻ <span class="optional">Nueva</span></button>
   </div>
@@ -106,53 +185,48 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button
  <main class="board" id="board" aria-label="Tablero de juego">
   <div id="playerZones"></div>
   <section class="stage" aria-label="Cartas del centro">
-   <div class="turn-badge"><div class="cap" id="turnCaption">SIGUIENTE JUGADOR</div><strong class="word" id="spokenWord">¿PREPARADOS?</strong></div>
-   <div class="card-stack" id="cardStack" aria-live="polite"><div class="picture-card cover" id="pictureCard"><span class="emoji" id="cardEmoji"></span><span class="card-word" id="cardLabel">¡A JUGAR!</span></div></div>
+   <div class="turn-badge"><div class="cap" id="turnCaption">SIGUIENTE JUGADOR</div><strong class="word" id="spokenWord">ESCUCHA ♫</strong></div>
+   <div class="card-stack" id="cardStack" aria-live="polite"><div class="picture-card cover" id="pictureCard"><span class="emoji" id="cardEmoji">♫</span><span class="card-word" id="cardLabel">¿QUÉ NOTA ES?</span></div></div>
    <div class="pile-count" id="pileCount">Montón: 0 cartas</div>
    <div class="status" id="status" aria-live="polite">Toca tu zona para sacar la carta</div>
    <div class="progress" id="progress"><div id="progressFill"></div></div>
-   <div class="helptext" id="helptext">Cuando coincida la carta con la palabra, ¡todos tocáis vuestra zona!</div>
+   <div class="helptext" id="helptext">Cuando coincidan el sonido y la carta, ¡todos tocáis vuestra zona!</div>
   </section>
 
  </main>
- <footer class="bottom"><span id="footerInfo">Pulsa tu zona cuando sea tu turno para sacar una carta.</span><span class="pill" id="modeInfo">Turnos manuales</span></footer>
+ <footer class="bottom"><span id="footerInfo">Pulsa tu zona cuando sea tu turno para sacar una carta.</span><span class="pill" id="modeInfo">Escucha · Compara · Toca</span></footer>
 </div>
 <div class="overlay" id="setupOverlay" role="dialog" aria-modal="true" aria-label="Preparar partida">
  <div class="modal">
-  <h2>🌮 ¡A jugar!</h2>
-  <p class="lead">De 2 a 8 niños, cada uno con su zona táctil. Las cartas salen del jugador hacia el montón central. No hace falta internet.</p>
+  <h2>♫ ¡A jugar con las notas!</h2>
+  <p class="lead">Reconoce el sonido y compáralo con la carta. De 2 a 8 jugadores, con zonas táctiles. Funciona sin internet.</p>
   <div class="setting-title">¿Cuántos niños juegan?</div>
   <div class="choices" id="countChoices"></div>
   <div class="setting-title">Nombres de los jugadores</div>
   <div class="name-fields" id="nameFields"></div>
   <div class="setting-title">Duración de la partida</div>
   <div class="choices" id="speedChoices"><button class="choice selected" type="button" data-cards="12">Normal · 12 cartas</button><button class="choice" type="button" data-cards="6">Rápida · 6 cartas</button></div>
-  <div class="options">
-   <label><input type="checkbox" id="specialOption" checked> Cartas especiales</label>
-   <label><input type="checkbox" id="musicOption" checked> Música de fondo</label>
-   <label><input type="checkbox" id="voiceOption"> Decir palabras en voz alta</label>
-  </div>
+  <div class="practice" aria-label="Escuchar notas de referencia"><div class="setting-title">Escucha las notas antes de jugar</div><div class="practice-notes" id="practiceNotes"><button type="button" data-note="DO">DO</button><button type="button" data-note="RE">RE</button><button type="button" data-note="MI">MI</button><button type="button" data-note="FA">FA</button><button type="button" data-note="SOL">SOL</button></div><p class="practice-help">Las notas suenan igual que durante el juego. Activa el volumen del dispositivo.</p></div>
   <button class="primary" id="startBtn" type="button">¡EMPEZAR PARTIDA! ▶</button>
-  <button class="secondary" id="setupRulesBtn" type="button">Ver reglas adaptadas a la pantalla táctil</button>
+  <button class="secondary" id="setupRulesBtn" type="button">Ver cómo se juega</button>
  </div>
 </div>
 <div class="overlay" id="rulesOverlay" role="dialog" aria-modal="true" aria-label="Reglas" hidden>
  <div class="modal"><h2>📖 Cómo se juega</h2>
  <div class="rules">
-  <p><b>1.</b> Se destaca claramente la zona del jugador al que le toca. <b>Él toca su propia zona para sacar una carta</b>; la carta vuela hasta el centro y se descubre al llegar. La palabra sigue el orden <b>Taco → Gato → Cabra → Queso → Pizza</b>.</p>
-  <p><b>2.</b> Cuando la carta se revela, <b>nadie recibe avisos</b>: mirad si el dibujo coincide con la palabra de arriba. Si coincide, <b>todos</b> tocan su propia zona cuanto antes. Con una carta especial, haced primero el gesto correspondiente.</p>
-  <p><b>3.</b> Al terminar la reacción, se ilumina brevemente quién fue el más rápido y quién recoge las cartas. El montón vuela a su zona, <b>sin carteles que paren la partida</b>. Una pulsación sin coincidencia hace recoger el montón.</p>
-  <p><b>4.</b> Si no coinciden, la carta permanece al menos <b>2,75 segundos</b> antes de indicar el siguiente jugador. La entrega del montón dura aproximadamente <b>1,5 segundos</b>. El jugador que pierde recoge las cartas, pero <b>no saca la siguiente</b>: saca carta el siguiente jugador en orden y la palabra vuelve a «Taco».</p>
-  <p><b>5.</b> <b>Victoria automática:</b> el jugador que saque su última carta y llegue a <b>0 cartas gana inmediatamente</b>, sin tener que tocar en otra coincidencia. Suena una fanfarria, aparece una celebración y se termina la partida.</p>
-  <div class="specials"><div><b>🦍</b>Gorila<br>Golpea el pecho</div><div><b>🦫</b>Marmota<br>Golpea la mesa</div><div><b>🐋</b>Narval<br>Cuerno en la cabeza</div></div>
-  <p><b>Adaptación para clase:</b> cada reacción se mide durante 7 segundos. Si varios no pulsan, recoge quien sacó la carta si está entre ellos; en otro caso, el primer no respondedor siguiendo los turnos. La pantalla no puede comprobar si los gestos se han hecho correctamente.</p>
+  <p><b>1.</b> El jugador al que le toca pulsa su zona para lanzar una carta al centro.</p>
+  <p><b>2.</b> La carta enseña <b>DO, RE, MI, FA o SOL</b>, escrita y en el pentagrama. Al aparecer, suena una nota de piano. La pantalla <b>no revela el nombre de la nota que suena</b>: debéis reconocerla de oído.</p>
+  <p><b>3.</b> Si <b>el sonido coincide con la carta</b>, todos tocan rápidamente su propia zona. El último en tocar —o quien no toque— recoge el montón. Si <b>no coinciden</b>, no hay que tocar: quien se precipite recoge las cartas.</p>
+  <p><b>4.</b> Puedes usar <b>«♫ Repetir»</b> para oír otra vez el sonido. Antes de jugar, los cinco botones de referencia permiten familiarizarse con sus alturas. No hay música de fondo que interfiera.</p>
+  <p><b>5.</b> Tras recoger cartas, sigue el siguiente jugador. <b>Gana automáticamente</b> el primero que se queda sin cartas. Hay partidas normales y rápidas de 2 a 8 jugadores. También se puede tocar usando las teclas 1–8.</p>
+  <p>Reconocer notas aisladas sin una referencia tonal puede resultar difícil: practica primero escuchando DO, RE, MI, FA y SOL.</p>
  </div>
  <button class="primary" type="button" id="closeRulesBtn">ENTENDIDO ✓</button></div>
 </div>
 <div class="overlay winner-overlay" id="winOverlay" role="dialog" aria-modal="true" aria-label="Fin de la partida" hidden>
  <div class="win-confetti" id="winConfetti" aria-hidden="true"></div>
  <div class="modal winner-modal"><div class="win-subtitle">★ FIN DE PARTIDA ★</div><div class="winner-icon" aria-hidden="true">🏆</div><h2 id="winTitle">¡TENEMOS GANADOR!</h2><div class="win-zero">🃏 0 CARTAS</div><p class="lead" id="winText">¡Enhorabuena!</p>
- <button class="primary" type="button" id="playAgainBtn">🎮 JUGAR OTRA PARTIDA</button><button class="secondary" type="button" id="winCloseBtn">Ver tablero final</button></div>
+ <button class="primary" type="button" id="playAgainBtn">♫ JUGAR OTRA PARTIDA</button><button class="secondary" type="button" id="winCloseBtn">Ver tablero final</button></div>
 </div>
 <div class="toast" id="toast" role="status"></div>
 <script>
