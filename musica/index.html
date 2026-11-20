@@ -710,7 +710,7 @@ function showCard(type){
  }
  const name=state.showCardName?displayNote(note).replace('⁵',tx(' (agudo)','（高音）')):tx('nota musical sin nombre','不顯示音名的音符');
  $('cardEmoji').innerHTML=
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 166" role="img" aria-label="'+name+' en pentagrama (referencia de clave de sol)">'+
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 166" role="img" aria-label="'+tx(name+' en pentagrama (referencia de clave de sol)','五線譜上的'+name+'（高音譜號位置）')+'">'+
   '<g stroke="#557090" stroke-width="2.2" stroke-linecap="round">'+lines+'</g>'+
   ledger+accidental+
   '<ellipse cx="'+x+'" cy="'+y+'" rx="15.5" ry="10" transform="rotate(-18 '+x+' '+y+')" fill="#182e50"/>'+
