@@ -48,13 +48,13 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button
 .picture-card{position:absolute;inset:0;z-index:1;border:4px solid #d6b8792a;border-radius:21px;box-shadow:0 9px 0 #4240381a,0 16px 26px #302d381e;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#fff3c5;overflow:hidden}
 .picture-card::before{content:"";position:absolute;right:-32%;top:-34%;width:95%;height:65%;background:#fff5;border-radius:50%}.picture-card.pop{animation:land .35s cubic-bezier(.19,1.3,.32,1)}
 .picture-card .emoji{font-size:clamp(65px,8vw,110px);line-height:1.16;filter:drop-shadow(0 5px 3px #5553)}.picture-card .card-word{position:relative;font-size:clamp(16px,1.65vw,23px);font-weight:1000;letter-spacing:.1em;margin-top:7px}
-.picture-card.cover{background:repeating-linear-gradient(45deg,#ffc840 0 24px,#ffe083 24px 46px);border-color:#e6b04b}.picture-card.cover .emoji{font-size:clamp(59px,6vw,86px)}.picture-card[data-type=taco]{background:#c4f0df}.picture-card[data-type=gato]{background:#fff0b6}.picture-card[data-type=cabra]{background:#c8eafa}.picture-card[data-type=queso]{background:#eac9ff}.picture-card[data-type=pizza]{background:#ffcdd8}.picture-card[data-type=gorila]{background:#e6caab}.picture-card[data-type=marmota]{background:#e0f1b4}.picture-card[data-type=narval]{background:#b8ebf6}
+.picture-card.cover{background:#f4d68d;border-color:#d4ac58}.picture-card.cover .emoji{font-size:clamp(59px,6vw,86px)}.picture-card[data-type=taco]{background:#c4f0df}.picture-card[data-type=gato]{background:#fff0b6}.picture-card[data-type=cabra]{background:#c8eafa}.picture-card[data-type=queso]{background:#eac9ff}.picture-card[data-type=pizza]{background:#ffcdd8}.picture-card[data-type=gorila]{background:#e6caab}.picture-card[data-type=marmota]{background:#e0f1b4}.picture-card[data-type=narval]{background:#b8ebf6}
 .pile-count{font-size:clamp(11px,1vw,14px);font-weight:1000;color:#80717d}
 .status{font-size:clamp(13px,1.4vw,20px);font-weight:1000;line-height:1.14;max-width:100%;min-height:25px;text-wrap:balance}
 .status.hot{color:#cf4161;font-size:clamp(16px,1.8vw,26px)}
 .helptext{font-size:clamp(10px,1vw,14px);font-weight:850;color:#837b79;max-width:100%;line-height:1.2;text-wrap:balance}
 .progress{width:min(78%,265px);height:11px;border-radius:99px;border:2px solid #e6d7b7;background:#fff;overflow:hidden;display:none;flex:none}.progress>div{height:100%;width:100%;background:#ffba51;transition:width .08s linear}
-.fly-card{position:fixed;z-index:50;display:grid;place-items:center;width:100px;height:130px;border-radius:14px;border:3px solid #edac2e;background:repeating-linear-gradient(45deg,#ffd046 0 17px,#ffe484 17px 34px);box-shadow:0 9px 20px #30354e3d;pointer-events:none;font-size:38px;will-change:transform,opacity}.fly-card.payout{width:68px;height:88px;font-size:25px}
+.fly-card{position:fixed;z-index:50;display:grid;place-items:center;width:100px;height:130px;border-radius:14px;border:3px solid #edac2e;background:#f4d68d;box-shadow:0 9px 20px #30354e3d;pointer-events:none;font-size:38px;will-change:transform,opacity}.fly-card.payout{width:68px;height:88px;font-size:25px}
 .bottom{display:flex;align-items:center;justify-content:center;gap:12px;flex:none;min-height:32px;background:#fffbe9b8;border-top:1px solid #f0dfb8;padding:4px 12px;text-align:center;color:#7d7173;font-weight:850;font-size:12px}.pill{white-space:nowrap;border:1px solid #e8d7ae;background:#fff2cc;border-radius:9px;padding:3px 8px;color:#705a49}
 .overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:12px;background:#222c438e;backdrop-filter:blur(8px)}.overlay[hidden]{display:none}
 .modal{background:#fffdf5;border:4px solid white;border-radius:26px;box-shadow:0 20px 60px #1d254363;width:min(680px,100%);max-height:95dvh;overflow:auto;padding:clamp(17px,2.5vw,28px);overscroll-behavior:contain}.modal h2{font-size:clamp(24px,3.5vw,38px);font-weight:1000;letter-spacing:-.03em;margin:0 0 7px;text-align:center}.lead{font-size:15px;color:#77737b;text-align:center;margin:0 auto 14px;line-height:1.35;max-width:570px}.setting-title{font-size:13px;font-weight:1000;color:#615b64;text-transform:uppercase;letter-spacing:.07em;margin:14px 0 7px}.choices{display:flex;gap:7px;flex-wrap:wrap}.choice{flex:1 1 60px;border:3px solid #e8e2d7;border-radius:14px;background:white;color:#51485c;font-weight:1000;font-size:18px;padding:10px 5px;min-height:46px}.choice.selected{border-color:#e8b233;background:#fff0b8;color:#513d24}
@@ -107,7 +107,7 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer}button
   <div id="playerZones"></div>
   <section class="stage" aria-label="Cartas del centro">
    <div class="turn-badge"><div class="cap" id="turnCaption">SIGUIENTE JUGADOR</div><strong class="word" id="spokenWord">¿PREPARADOS?</strong></div>
-   <div class="card-stack" id="cardStack" aria-live="polite"><div class="picture-card cover" id="pictureCard"><span class="emoji" id="cardEmoji">🌮</span><span class="card-word" id="cardLabel">¡A JUGAR!</span></div></div>
+   <div class="card-stack" id="cardStack" aria-live="polite"><div class="picture-card cover" id="pictureCard"><span class="emoji" id="cardEmoji"></span><span class="card-word" id="cardLabel">¡A JUGAR!</span></div></div>
    <div class="pile-count" id="pileCount">Montón: 0 cartas</div>
    <div class="status" id="status" aria-live="polite">Toca tu zona para sacar la carta</div>
    <div class="progress" id="progress"><div id="progressFill"></div></div>
@@ -256,7 +256,7 @@ function showNextTurn(){if(state.phase==='won')return;
 function showCard(type){picture.className='picture-card';picture.dataset.type=type;picture.classList.add('pop');$('cardEmoji').textContent=TYPES[type].emoji;$('cardLabel').textContent=TYPES[type].word;}
 function pileText(){$('pileCount').textContent=`Montón: ${state.pile.length} carta${state.pile.length===1?'':'s'}`;}
 function animateDeal(index,onFinish){const rect=state.players[index].zone.getBoundingClientRect(),target=$('cardStack').getBoundingClientRect();
- const el=document.createElement('div');el.className='fly-card';el.textContent='🌮';const w=100,h=130;
+ const el=document.createElement('div');el.className='fly-card';el.textContent='';const w=100,h=130;
  el.style.left=`${rect.left+rect.width/2-w/2}px`;el.style.top=`${rect.top+rect.height/2-h/2}px`;document.body.appendChild(el);
  const deltaX=(target.left+target.width/2)-(rect.left+rect.width/2),deltaY=(target.top+target.height/2)-(rect.top+rect.height/2);
  let called=false;function done(){if(called)return;called=true;el.remove();onFinish();}
@@ -349,7 +349,7 @@ function declareWinner(id){if(state.phase==='won')return;
  refreshZones();makeConfetti();overlay('winOverlay',true);playVictoryFanfare();
 }
 function initGame(){resetClocks();stopVictory();++state.animationId;state.special=$('specialOption').checked;state.voice=$('voiceOption').checked;state.music=$('musicOption').checked;musicStop();createPlayers();state.pile=[];state.turn=0;state.wordIndex=0;state.phase='ready';state.currentCard=null;state.winnerId=-1;
- picture.className='picture-card cover';picture.removeAttribute('data-type');$('cardEmoji').textContent='🌮';$('cardLabel').textContent='¡A JUGAR!';pileText();overlay('setupOverlay',false);overlay('winOverlay',false);
+ picture.className='picture-card cover';picture.removeAttribute('data-type');$('cardEmoji').textContent='';$('cardLabel').textContent='¡A JUGAR!';pileText();overlay('setupOverlay',false);overlay('winOverlay',false);
  renderPlayers();showNextTurn();musicToggle(state.music);if(state.sound)initAudio();}
 function newGameSetup(){resetClocks();stopVictory();++state.animationId;musicStop();state.phase='setup';overlay('winOverlay',false);overlay('setupOverlay',true);}
 function showRules(){overlay('rulesOverlay',true);}function hideRules(){overlay('rulesOverlay',false);}
