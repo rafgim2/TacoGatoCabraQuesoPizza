@@ -678,7 +678,7 @@ function refreshZones(){board.classList.toggle('awaiting-draw',state.phase==='re
 }
 function showNextTurn(){if(state.phase==='won')return;
  const empty=state.players.find(p=>p.hand.length===0);if(empty){declareWinner(empty.id);return;}
- const next=nextActive(state.turn);if(next<0)return;state.turn=next;state.phase='ready';state.penaltyId=-1;state.fastestId=-1;board.style.setProperty('--turn-color',state.players[next].color.main);$('turnCaption').textContent='♫ TURNO DE';$('spokenWord').textContent=state.players[next].name.toUpperCase();$('status').textContent=`👆 ¡${state.players[next].name}, toca tu zona!`;$('status').className='status';$('helptext').textContent='Los demás esperan. Solo toca el jugador señalado.';$('footerInfo').textContent=`Turno de ${state.players[next].name}: pulsa su zona para lanzar la carta.`;refreshZones();}
+ const next=nextActive(state.turn);if(next<0)return;state.turn=next;state.phase='ready';state.penaltyId=-1;state.fastestId=-1;board.style.setProperty('--turn-color',state.players[next].color.main);$('turnCaption').textContent='♫ TURNO DE';$('spokenWord').textContent=state.players[next].name.toUpperCase();$('status').textContent=`👆 ¡${state.players[next].name}, toca tu zona!`;$('status').className='status';$('helptext').textContent='Los demás esperan. Solo toca el jugador señalado.';$('footerInfo').textContent=`Turno de ${state.players[next].name}: pulsa su zona para lanzar la carta.`;refreshZones();syncLiveLanguage();}
 // Partitura vectorial sin clave dibujada: referencia de clave de SOL.
 // Líneas: y=22 FA5 · 46 RE5 · 70 SI4 · 94 SOL4 · 118 MI4.
 // Cada espacio o línea contigua cambia 12 unidades de y (un grado diatónico).
@@ -738,8 +738,8 @@ function animateCollect(index,count){if(prefersReduced())return;const src=$('car
  },j*66);}
 }
 function press(id){if(state.phase==='setup'||state.phase==='dealing'||state.phase==='result'||state.phase==='won')return;
- if(state.phase==='ready'){if(id!==state.turn){tone(230,.11,'triangle',.026);toast(`Ahora le toca a ${state.players[state.turn].name}.`,1200);return;}flipFrom(id);return;}
- if(state.phase==='card'){tone(155,.27,'sawtooth',.062);applyPenalty(id,`¡Falsa alarma! ${state.players[id].name} pulsó sin coincidencia.`,null);return;}
+ if(state.phase==='ready'){if(id!==state.turn){tone(230,.11,'triangle',.026);toast(tx('Ahora le toca a '+state.players[state.turn].name+'.','現在輪到 '+state.players[state.turn].name+'。'),1200);return;}flipFrom(id);return;}
+ if(state.phase==='card'){tone(155,.27,'sawtooth',.062);applyPenalty(id,tx('¡Falsa alarma! '+state.players[id].name+' pulsó sin coincidencia.','按錯了！音符不相符，'+state.players[id].name+' 卻按下去了。'),null);return;}
  if(state.phase==='reaction'){if(state.responses.has(id))return;state.responses.set(id,Math.max(0,performance.now()-state.roundStart));tone(470+id*65,.085,'sine',.055);
  // En partidas de dos, la primera pulsación válida decide la ronda inmediatamente.
  if(state.players.length===2||state.responses.size===state.players.length)finishRace();else refreshZones();return;}
@@ -755,7 +755,7 @@ function flipFrom(id){resetClocks();const p=state.players[id];if(!p.hand.length)
  const spoken=candidates[Math.floor(Math.random()*candidates.length)].id;
  state.currentCard=type;state.currentWord=spoken;state.dealer=id;
  state.turn=(id+1)%state.players.length;state.pile.push(type);state.phase='dealing';const isLastCard=p.hand.length===0;
- $('turnCaption').textContent=`CARTA DE ${p.name.toUpperCase()}`;$('spokenWord').textContent='♫ ESCUCHA';$('status').textContent='♫ La carta viaja al centro…';$('status').className='status';$('helptext').textContent='Mirad la carta cuando aparezca.';pileText();refreshZones();tone(365,.10,'triangle',.045);
+ $('turnCaption').textContent=`CARTA DE ${p.name.toUpperCase()}`;$('spokenWord').textContent='♫ ESCUCHA';$('status').textContent='♫ La carta viaja al centro…';$('status').className='status';$('helptext').textContent='Mirad la carta cuando aparezca.';pileText();refreshZones();syncLiveLanguage();tone(365,.10,'triangle',.045);
  const animID=++state.animationId;animateDeal(id,()=>{if(animID!==state.animationId||state.phase!=='dealing')return;showCard(type);playPianoNote(spoken);
  // Al revelar la última carta se termina la partida automáticamente.
  if(isLastCard){declareWinner(id);return;}
@@ -768,7 +768,7 @@ function flipFrom(id){resetClocks();const p=state.players[id];if(!p.hand.length)
    // Sin barra, sonido, destellos, mensajes ni animaciones que revelen el acierto.
    state.roundTimeout=setTimeout(finishRace,RACE_MS);refreshZones();
  }else{state.phase='card';refreshZones();t(()=>{if(state.phase==='card')showNextTurn();},NON_MATCH_MS);}
-
+ syncLiveLanguage();
  });}
 function updateProgress(){if(state.phase!=='reaction')return;const remaining=Math.max(0,1-(performance.now()-state.roundStart)/RACE_MS);$('progressFill').style.width=`${remaining*100}%`; $('progressFill').style.background=remaining<.33?'#e45d68':'#f6ae42';state.raf=requestAnimationFrame(updateProgress);}
 function chooseNonResponder(missed){const dealer=missed.find(p=>p.id===state.dealer);if(dealer)return dealer;for(let step=1;step<=state.players.length;step++){const id=(state.dealer+step)%state.players.length;const p=missed.find(x=>x.id===id);if(p)return p;}return missed[0];}
@@ -794,6 +794,7 @@ function applyPenalty(id,reason,fastestId){
  $('footerInfo').textContent=`${p.name} recibe ${n} cartas. Saca la siguiente carta el próximo jugador.`;
  refreshZones();tone(300,.20,'triangle',.06);
  animateCollect(id,n);
+ syncLiveLanguage();
  state.resultTimer=setTimeout(()=>{if(state.phase!=='result')return;showNextTurn();},RESULT_MS);
 }
 function makeConfetti(){const layer=$('winConfetti');layer.replaceChildren();
@@ -819,12 +820,12 @@ function declareWinner(id){if(state.phase==='won')return;
  $('helptext').textContent='¡Ha llegado a 0 cartas!';$('footerInfo').textContent=`Ganador: ${p.name} · 0 cartas`;
  $('winTitle').textContent=`¡${p.name} HA GANADO!`;
  $('winText').textContent='¡Buen oído y cero cartas! La partida ha terminado.';
- refreshZones();makeConfetti();overlay('winOverlay',true);playVictoryFanfare();
+ refreshZones();syncLiveLanguage();makeConfetti();overlay('winOverlay',true);playVictoryFanfare();
 }
 function initGame(){state.notePool=getPool();if(state.mode==='hard'&&new Set(state.notePool.map(n=>n.midi)).size!==MAX_SOUNDS){toast(tx('Selecciona exactamente 5 sonidos.','請選擇剛好 5 個不同音高。'),2200);return;}resetClocks();stopVictory();++state.animationId;state.special=false;state.voice=false;state.music=false;musicStop();createPlayers();state.pile=[];state.turn=0;state.wordIndex=0;state.phase='ready';state.currentCard=null;state.winnerId=-1;
- picture.className='picture-card cover';picture.removeAttribute('data-type');$('cardEmoji').textContent='♫';$('cardLabel').textContent='¿QUÉ NOTA ES?';pileText();overlay('setupOverlay',false);overlay('winOverlay',false);
+ picture.className='picture-card cover';picture.removeAttribute('data-type');$('cardEmoji').textContent='♫';$('cardLabel').textContent=tx('¿QUÉ NOTA ES?','這是什麼音？');pileText();overlay('setupOverlay',false);overlay('winOverlay',false);
  renderPlayers();showNextTurn();$('modeInfo').textContent=modeText();initAudio();}
-function newGameSetup(){resetClocks();stopVictory();++state.animationId;musicStop();state.phase='setup';overlay('winOverlay',false);overlay('setupOverlay',true);}
+function newGameSetup(){resetClocks();stopVictory();++state.animationId;musicStop();state.phase='setup';overlay('winOverlay',false);overlay('setupOverlay',true);syncLiveLanguage();}
 function showRules(){overlay('rulesOverlay',true);}function hideRules(){overlay('rulesOverlay',false);}
 $('countChoices').addEventListener('click',e=>{const b=e.target.closest('button[data-num]');if(!b)return;state.count=Number(b.dataset.num);showNames();});
 $('speedChoices').addEventListener('click',e=>{const b=e.target.closest('button[data-cards]');if(!b)return;state.cards=Number(b.dataset.cards);[...$('speedChoices').querySelectorAll('button')].forEach(x=>x.classList.toggle('selected',Number(x.dataset.cards)===state.cards));});
