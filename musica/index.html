@@ -125,7 +125,7 @@ html,body{background:#080f26;color:#f6f9ff}
 .picture-card[data-type=fa]{background:linear-gradient(140deg,#fff,#fff1d8);border-color:#ffb563}
 .picture-card[data-type=sol]{background:linear-gradient(140deg,#fff,#e0f9e8);border-color:#84d095}
 .picture-card .emoji{display:grid;place-items:center;width:100%;max-width:190px;filter:none}
-.picture-card .emoji svg{width:100%;max-height:126px;filter:drop-shadow(0 2px #fff8)}
+.picture-card .emoji svg{display:block;width:100%;height:auto;max-height:140px;overflow:visible;filter:drop-shadow(0 2px #fff8)}
 .picture-card .card-word{font-size:clamp(29px,3.1vw,43px);letter-spacing:.13em;color:#1b2a4b;text-shadow:0 2px #fff9}
 .picture-card.cover .card-word{color:#fff;font-size:clamp(13px,1.6vw,22px);letter-spacing:.03em}
 .picture-card.pop{animation:music-reveal .55s cubic-bezier(.15,1.5,.2,1)}
@@ -259,20 +259,46 @@ function initAudio(){
  if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});return true;}catch(e){return false;}
 }
 // Sonidos sintetizados en el navegador. Solo las cinco notas del juego.
-function playPianoNote(note,offset=0,duration=.82){
+// Piano sintético cálido: varias cuerdas armónicas ligeramente desafinadas,
+// ataque percutivo breve y cola natural. Sin archivos ni conexión.
+function playPianoNote(note,offset=0,duration=1.55){
  if(!PITCH[note]||!initAudio())return;
- const at=audioCtx.currentTime+.022+offset,frequency=PITCH[note];
- [[1,.21],[2,.065],[3,.025]].forEach(([harmonic,volume])=>{
-  const osc=audioCtx.createOscillator(),env=audioCtx.createGain();
-  osc.type='sine';osc.frequency.setValueAtTime(frequency*harmonic,at);
-  env.gain.setValueAtTime(.0001,at);
-  env.gain.exponentialRampToValueAtTime(volume,at+.014);
-  env.gain.exponentialRampToValueAtTime(volume*.38,at+.16);
-  env.gain.exponentialRampToValueAtTime(.0001,at+duration);
-  osc.connect(env);env.connect(audioCtx.destination);
-  osc.start(at);osc.stop(at+duration+.02);
+ const start=audioCtx.currentTime+.03+offset;
+ const base=PITCH[note];
+ const end=start+Math.max(.45,duration);
+ // El brillo de las frecuencias altas decae más deprisa que el fundamental.
+ const partials=[
+  {n:1,amp:.20,decay:.60},{n:2,amp:.085,decay:.43},
+  {n:3,amp:.043,decay:.33},{n:4,amp:.023,decay:.24},
+  {n:5,amp:.012,decay:.18},{n:6,amp:.006,decay:.15}
+ ];
+ partials.forEach(({n,amp,decay})=>{
+  // Una pequeña inarmonicidad da un ataque más parecido al de cuerda real.
+  const freq=base*n*Math.sqrt((1+.00018*n*n)/(1+.00018));
+  const o=audioCtx.createOscillator(),gain=audioCtx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(freq,start);
+  gain.gain.setValueAtTime(.0001,start);
+  gain.gain.exponentialRampToValueAtTime(amp,start+.009);
+  gain.gain.exponentialRampToValueAtTime(Math.max(.0002,amp*decay),start+.20);
+  gain.gain.exponentialRampToValueAtTime(Math.max(.0002,amp*decay*.37),end-.08);
+  gain.gain.exponentialRampToValueAtTime(.0001,end);
+  o.connect(gain);gain.connect(audioCtx.destination);
+  o.start(start);o.stop(end+.025);
  });
- if(offset===0){const stage=document.querySelector('.stage');stage.classList.remove('note-playing');void stage.offsetWidth;stage.classList.add('note-playing');t(()=>stage.classList.remove('note-playing'),860);}
+ // Segundo hilo de cuerda suave, para el batido natural del piano.
+ const string=audioCtx.createOscillator(),env=audioCtx.createGain();
+ string.type='sine';string.frequency.setValueAtTime(base*1.0007,start);
+ env.gain.setValueAtTime(.0001,start);
+ env.gain.exponentialRampToValueAtTime(.055,start+.012);
+ env.gain.exponentialRampToValueAtTime(.018,end-.09);
+ env.gain.exponentialRampToValueAtTime(.0001,end);
+ string.connect(env);env.connect(audioCtx.destination);
+ string.start(start);string.stop(end+.025);
+ if(offset===0){
+  const stage=document.querySelector('.stage');
+  stage.classList.remove('note-playing');void stage.offsetWidth;stage.classList.add('note-playing');
+  t(()=>stage.classList.remove('note-playing'),1050);
+ }
 }
 function tone(){} // Sin efectos que confundan la audición.
 function musicStop(){}
@@ -314,17 +340,38 @@ function refreshZones(){board.classList.toggle('awaiting-draw',state.phase==='re
 function showNextTurn(){if(state.phase==='won')return;
  const empty=state.players.find(p=>p.hand.length===0);if(empty){declareWinner(empty.id);return;}
  const next=nextActive(state.turn);if(next<0)return;state.turn=next;state.phase='ready';state.penaltyId=-1;state.fastestId=-1;board.style.setProperty('--turn-color',state.players[next].color.main);$('turnCaption').textContent='♫ TURNO DE';$('spokenWord').textContent=state.players[next].name.toUpperCase();$('status').textContent=`👆 ¡${state.players[next].name}, toca tu zona!`;$('status').className='status';$('helptext').textContent='Los demás esperan. Solo toca el jugador señalado.';$('footerInfo').textContent=`Turno de ${state.players[next].name}: pulsa su zona para lanzar la carta.`;refreshZones();}
+// Partitura SVG vectorial precisa. Clave de sol: las líneas (de arriba a abajo)
+ // son FA5, RE5, SI4, SOL4 y MI4; las posiciones intermedias son espacios.
+ // Distancia entre líneas: 24 unidades; entre notas contiguas: 12 unidades.
+const STAFF={do:{y:142,ledger:true},re:{y:130,ledger:false},
+             mi:{y:118,ledger:false},fa:{y:106,ledger:false},
+             sol:{y:94,ledger:false}};
 function showCard(type){
- picture.className='picture-card';picture.dataset.type=type;picture.classList.add('pop');
- const y={do:85,re:79,mi:73,fa:67,sol:61}[type];
- const ledger=type==='do'?'<line x1="83" y1="85" x2="125" y2="85" stroke="#192748" stroke-width="2.5"/>':'';
- $('cardEmoji').innerHTML='<svg viewBox="0 0 180 114" role="img" aria-label="Nota '+TYPES[type].word+' en pentagrama">'+
- '<g stroke="#456080" stroke-width="1.9">'+[25,37,49,61,73].map(v=>'<line x1="8" y1="'+v+'" x2="170" y2="'+v+'"/>').join('')+'</g>'+
- '<text x="16" y="82" font-size="63" fill="#233c62">𝄞</text>'+ledger+
- '<ellipse cx="104" cy="'+y+'" rx="15" ry="10" transform="rotate(-18 104 '+y+')" fill="#192748"/>'+
- '<line x1="117" y1="'+(y-2)+'" x2="117" y2="'+(y-48)+'" stroke="#192748" stroke-width="4"/>'+
- '</svg>';
- $('cardLabel').textContent=TYPES[type].word;
+ const note=STAFF[type];
+ if(!note)return;
+ picture.className='picture-card';
+ picture.dataset.type=type;
+ picture.classList.add('pop');
+ const x=149, y=note.y;
+ // Cada cabeza de nota está centrada matemáticamente en su línea o espacio.
+ // DO4: línea adicional a y=142 · RE4: espacio y=130 · MI4: línea y=118
+ // FA4: espacio y=106 · SOL4: línea y=94.
+ const lines=[22,46,70,94,118].map(py=>
+   '<line x1="52" x2="221" y1="'+py+'" y2="'+py+'" />'
+ ).join('');
+ const ledger=note.ledger?
+   '<line x1="'+(x-25)+'" x2="'+(x+25)+'" y1="'+y+'" y2="'+y+'" stroke="#182e50" stroke-width="2.8"/>':'';
+ const name=TYPES[type].word;
+ $('cardEmoji').innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 165" aria-label="'+name+' en clave de sol" role="img">'+
+  '<g stroke="#47628a" stroke-width="2.4" stroke-linecap="round">'+lines+'</g>'+
+  // Clave de sol dibujada a escala para no depender de las fuentes del dispositivo.
+  '<path d="M84 115 C49 109 55 79 75 70 C96 60 103 41 96 22 C90 6 77 14 74 30 C69 55 85 75 94 97 C110 131 96 148 82 147 C73 147 69 139 74 134 C79 129 86 137 83 142" fill="none" stroke="#203657" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>'+
+  '<path d="M92 22 C91 46 84 62 80 79 L72 137" fill="none" stroke="#203657" stroke-width="3.3" stroke-linecap="round"/>'+
+  ledger+
+  '<ellipse cx="'+x+'" cy="'+y+'" rx="16" ry="10.5" transform="rotate(-18 '+x+' '+y+')" fill="#152c4d"/>'+
+  '<line x1="'+(x+14)+'" y1="'+(y-3)+'" x2="'+(x+14)+'" y2="'+(y-55)+'" stroke="#152c4d" stroke-width="4.2" stroke-linecap="round"/>'+
+  '</svg>';
+ $('cardLabel').textContent=name;
 }
 function pileText(){$('pileCount').textContent=`Montón: ${state.pile.length} carta${state.pile.length===1?'':'s'}`;}
 function animateDeal(index,onFinish){const rect=state.players[index].zone.getBoundingClientRect(),target=$('cardStack').getBoundingClientRect();
