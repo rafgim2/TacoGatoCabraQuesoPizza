@@ -263,7 +263,7 @@ html,body{background:#080f26;color:#f6f9ff}
  <div class="rules">
   <p><b>1.</b> El jugador al que le toca pulsa su zona para lanzar una carta al centro.</p>
   <p><b>2.</b> En el modo sencillo aparecen <b>DO, RE, MI, FA y SOL</b> (en notación americana: <b>C, D, E, F y G</b>). En el difícil eliges <b>exactamente cinco sonidos distintos</b> entre DO4 y DO5. Puedes usar nombres en español o americano y, si quieres, mostrar <b>solo el pentagrama</b> sin el nombre. El nombre del sonido que suena siempre permanece oculto.</p>
-  <p><b>3.</b> Si <b>el sonido coincide con la carta</b>, todos tocan rápidamente su propia zona. El último en tocar —o quien no toque— recoge el montón. Si <b>no coinciden</b>, no hay que tocar: quien se precipite recoge las cartas.</p>
+  <p><b>3.</b> Si <b>el sonido coincide con la carta</b>, todos tocan rápidamente su propia zona. El último en tocar —o quien no toque— recoge el montón. <b>Si hay solo dos jugadores, basta con que pulse el primero</b>: el otro recoge las cartas automáticamente. Si <b>no coinciden</b>, no hay que tocar: quien se precipite recoge las cartas.</p>
   <p><b>4.</b> Usa <b>«♫ Repetir»</b> para oír otra vez el sonido. Los botones de práctica reflejan las notas elegidas y el sistema de nombres. <b>DO♯ y RE♭</b> (en americano <b>C♯ y D♭</b>) tienen la misma altura: la coincidencia se decide por el sonido. No hay música de fondo que interfiera.</p>
   <p><b>5.</b> Tras recoger cartas, sigue el siguiente jugador. <b>Gana automáticamente</b> el primero que se queda sin cartas. Hay partidas normales y rápidas de 2 a 8 jugadores. También se puede tocar usando las teclas 1–8.</p>
   <p>Do grave = DO4 (261,6 Hz), do agudo = DO5 (523,3 Hz): hay 12 intervalos de semitono entre ambos y 13 alturas contando los dos extremos. Para identificar alturas absolutas, prueba primero los botones de práctica.</p>
@@ -325,7 +325,7 @@ const COLORS=[
  {main:'#f78ada',light:'#593455'},{main:'#62b5ff',light:'#254571'},
  {main:'#ffdb87',light:'#5a492e'},{main:'#c2a1ff',light:'#413872'}
 ];
-const RACE_MS=7000, RESULT_MS=1450, NON_MATCH_MS=2250, DEAL_MS=690;
+const RACE_MS=7000, RESULT_MS=1100, NON_MATCH_MS=1750, DEAL_MS=690;
 const $=id=>document.getElementById(id);
 const board=$('board'),zones=$('playerZones'),picture=$('pictureCard');
 const state={count:4,cards:12,players:[],pile:[],turn:0,wordIndex:0,phase:'setup',currentCard:null,currentWord:'',dealer:0,
@@ -571,7 +571,8 @@ function press(id){if(state.phase==='setup'||state.phase==='dealing'||state.phas
  if(state.phase==='ready'){if(id!==state.turn){tone(230,.11,'triangle',.026);toast(`Ahora le toca a ${state.players[state.turn].name}.`,1200);return;}flipFrom(id);return;}
  if(state.phase==='card'){tone(155,.27,'sawtooth',.062);applyPenalty(id,`¡Falsa alarma! ${state.players[id].name} pulsó sin coincidencia.`,null);return;}
  if(state.phase==='reaction'){if(state.responses.has(id))return;state.responses.set(id,Math.max(0,performance.now()-state.roundStart));tone(470+id*65,.085,'sine',.055);
- if(state.responses.size===state.players.length)finishRace();else refreshZones();return;}
+ // En partidas de dos, la primera pulsación válida decide la ronda inmediatamente.
+ if(state.players.length===2||state.responses.size===state.players.length)finishRace();else refreshZones();return;}
 }
 function flipFrom(id){resetClocks();const p=state.players[id];if(!p.hand.length){state.turn=(id+1)%state.players.length;showNextTurn();return;}
  const type=p.hand.shift();
