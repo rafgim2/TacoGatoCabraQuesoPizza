@@ -321,10 +321,10 @@ function displayNote(note){
 function refreshNotationLabels(){
  $('gameTitle').textContent=state.notation==='american'?'C · D · E · F · G':'DO · RE · MI · FA · SOL';
  const easy=$('modeChoices').querySelector('[data-mode="easy"]');
- easy.textContent=state.notation==='american'?'Sencillo · C a G':'Sencillo · DO a SOL';
+ easy.textContent=state.notation==='american'?tx('Sencillo · C a G','簡單 · C 到 G'):tx('Sencillo · DO a SOL','簡單 · DO 到 SOL');
  $('noteSelectionInfo').textContent=state.notation==='american'
-  ?'Elige cinco alturas entre C4 y C5. C♯ y D♭ suenan igual y cuentan como un solo sonido; escoge una u otra escritura.'
-  :'Elige cinco alturas entre DO4 y DO5. DO♯ y RE♭ suenan igual y cuentan como un solo sonido; escoge una u otra escritura.';
+  ?tx('Elige cinco alturas entre C4 y C5. C♯ y D♭ suenan igual y cuentan como un solo sonido; escoge una u otra escritura.','請從 C4 到 C5 選出 5 個不同音高。C♯ 和 D♭ 音高相同，只能選其中一種記譜方式。')
+  :tx('Elige cinco alturas entre DO4 y DO5. DO♯ y RE♭ suenan igual y cuentan como un solo sonido; escoge una u otra escritura.','請從 DO4 到 DO5 選出 5 個不同音高。DO♯ 和 RE♭ 音高相同，只能選其中一種記譜方式。');
 }
 const COLORS=[
  {main:'#7f87ff',light:'#242a57'},{main:'#42e5d6',light:'#114e57'},
@@ -417,7 +417,7 @@ function renderNoteChoices(){
   label.append(input,span);wrap.appendChild(label);
  }
  const distinct=new Set(getPool().map(n=>n.midi)).size;
- $('noteCount').textContent=distinct+' de '+MAX_SOUNDS+' sonidos elegidos'+(distinct===MAX_SOUNDS?' ✓':' · Selecciona '+(MAX_SOUNDS-distinct)+' más');
+ $('noteCount').textContent=tx(distinct+' de '+MAX_SOUNDS+' sonidos elegidos'+(distinct===MAX_SOUNDS?' ✓':' · Selecciona '+(MAX_SOUNDS-distinct)+' más'),distinct+' / '+MAX_SOUNDS+' 個音高已選擇'+(distinct===MAX_SOUNDS?' ✓':' · 還需選 '+(MAX_SOUNDS-distinct)+' 個'));
  $('noteCount').classList.toggle('ready',distinct===MAX_SOUNDS);
  $('startBtn').disabled=state.mode==='hard'&&distinct!==MAX_SOUNDS;
  renderPractice();
@@ -427,9 +427,9 @@ function renderPractice(){
  for(const note of getPool()){
   const b=document.createElement('button');b.type='button';
   b.dataset.note=note.id;b.textContent=displayNote(note);
-  b.title='Escuchar '+displayNote(note);wrap.appendChild(b);
+  b.title=tx('Escuchar ','試聽 ')+displayNote(note);wrap.appendChild(b);
  }
- if(!wrap.children.length)wrap.textContent='Elige las notas arriba para escucharlas.';
+ if(!wrap.children.length)wrap.textContent=tx('Elige las notas arriba para escucharlas.','請先在上方選擇音符，才能試聽。');
 }
 function setMode(mode){
  state.mode=mode==='hard'?'hard':'easy';
@@ -471,7 +471,7 @@ function setupNoteControls(){
    }else if(state.selectedNotes.length<MAX_SOUNDS){
     state.selectedNotes.push(chosen.id);
    }else{
-    toast('Máximo 5 sonidos. Desmarca uno para cambiarlo.',2100);
+    toast(tx('Máximo 5 sonidos. Desmarca uno para cambiarlo.','最多只能選 5 個音高。請先取消一個，再選新的。'),2100);
    }
   }else{
    state.selectedNotes=state.selectedNotes.filter(id=>id!==chosen.id);
@@ -643,11 +643,11 @@ function applyLanguage(code){
 }
 
 function populateSettings(){for(let n=2;n<=8;n++){const b=document.createElement('button');b.type='button';b.className='choice'+(n===state.count?' selected':'');b.textContent=n;b.dataset.num=n;$('countChoices').appendChild(b);}
- for(let i=0;i<8;i++){const l=document.createElement('label');l.className='name-field';l.innerHTML=`<span class="name-dot" style="background:${COLORS[i].main}"></span><input maxlength="16" aria-label="Nombre del jugador ${i+1}" value="Jugador ${i+1}">`;$('nameFields').appendChild(l);}showNames();}
+ for(let i=0;i<8;i++){const l=document.createElement('label');l.className='name-field';l.innerHTML=`<span class="name-dot" style="background:${COLORS[i].main}"></span><input maxlength="16" aria-label="${tx('Nombre del jugador ','玩家名稱 ')}${i+1}" value="${playerLabel(i)}">`;$('nameFields').appendChild(l);}showNames();}
 function showNames(){[...$('nameFields').children].forEach((e,i)=>e.hidden=i>=state.count);[...$('countChoices').children].forEach(b=>b.classList.toggle('selected',Number(b.dataset.num)===state.count));}
 function nextActive(start){for(let i=0;i<state.players.length;i++){const idx=(start+i)%state.players.length;if(state.players[idx].hand.length>0)return idx;}return -1;}
 function createPlayers(){let deck=buildDeck();state.players=[];const names=[...$('nameFields').querySelectorAll('input')];for(let i=0;i<state.count;i++){
- if(deck.length<state.cards)deck.push(...buildDeck());state.players.push({id:i,name:names[i].value.trim().slice(0,16)||`Jugador ${i+1}`,color:COLORS[i],hand:deck.splice(0,state.cards),zone:null});}}
+ if(deck.length<state.cards)deck.push(...buildDeck());state.players.push({id:i,name:names[i].value.trim().slice(0,16)||playerLabel(i),color:COLORS[i],hand:deck.splice(0,state.cards),zone:null});}}
 function renderPlayers(){zones.replaceChildren();for(const p of state.players){const btn=document.createElement('button');btn.type='button';btn.className='player-zone';btn.dataset.seat=p.id;
  btn.style.setProperty('--accent',p.color.main);btn.style.setProperty('--light',p.color.light);
  btn.innerHTML=`<span class="seat-num">JUGADOR ${p.id+1}</span><span class="player-name"></span><span class="player-count"></span><span class="player-symbol">🃏</span><span class="player-cue">MI TURNO</span>`;
@@ -820,19 +820,19 @@ function declareWinner(id){if(state.phase==='won')return;
  $('winText').textContent='¡Buen oído y cero cartas! La partida ha terminado.';
  refreshZones();makeConfetti();overlay('winOverlay',true);playVictoryFanfare();
 }
-function initGame(){state.notePool=getPool();if(state.mode==='hard'&&new Set(state.notePool.map(n=>n.midi)).size!==MAX_SOUNDS){toast('Selecciona exactamente 5 sonidos.',2200);return;}resetClocks();stopVictory();++state.animationId;state.special=false;state.voice=false;state.music=false;musicStop();createPlayers();state.pile=[];state.turn=0;state.wordIndex=0;state.phase='ready';state.currentCard=null;state.winnerId=-1;
+function initGame(){state.notePool=getPool();if(state.mode==='hard'&&new Set(state.notePool.map(n=>n.midi)).size!==MAX_SOUNDS){toast(tx('Selecciona exactamente 5 sonidos.','請選擇剛好 5 個不同音高。'),2200);return;}resetClocks();stopVictory();++state.animationId;state.special=false;state.voice=false;state.music=false;musicStop();createPlayers();state.pile=[];state.turn=0;state.wordIndex=0;state.phase='ready';state.currentCard=null;state.winnerId=-1;
  picture.className='picture-card cover';picture.removeAttribute('data-type');$('cardEmoji').textContent='♫';$('cardLabel').textContent='¿QUÉ NOTA ES?';pileText();overlay('setupOverlay',false);overlay('winOverlay',false);
- renderPlayers();showNextTurn();$('modeInfo').textContent=(state.mode==='hard'?'Difícil · 5 sonidos':(state.notation==='american'?'Sencillo · C–G':'Sencillo · DO–SOL'))+(state.showCardName?'':' · solo pentagrama');initAudio();}
+ renderPlayers();showNextTurn();$('modeInfo').textContent=modeText();initAudio();}
 function newGameSetup(){resetClocks();stopVictory();++state.animationId;musicStop();state.phase='setup';overlay('winOverlay',false);overlay('setupOverlay',true);}
 function showRules(){overlay('rulesOverlay',true);}function hideRules(){overlay('rulesOverlay',false);}
 $('countChoices').addEventListener('click',e=>{const b=e.target.closest('button[data-num]');if(!b)return;state.count=Number(b.dataset.num);showNames();});
 $('speedChoices').addEventListener('click',e=>{const b=e.target.closest('button[data-cards]');if(!b)return;state.cards=Number(b.dataset.cards);[...$('speedChoices').querySelectorAll('button')].forEach(x=>x.classList.toggle('selected',Number(x.dataset.cards)===state.cards));});
 $('startBtn').addEventListener('click',initGame);$('rulesBtn').addEventListener('click',showRules);$('setupRulesBtn').addEventListener('click',showRules);$('closeRulesBtn').addEventListener('click',hideRules);
 $('restartBtn').addEventListener('click',newGameSetup);$('playAgainBtn').addEventListener('click',initGame);$('winCloseBtn').addEventListener('click',()=>overlay('winOverlay',false));
-$('replayBtn').addEventListener('click',()=>{if((state.phase==='card'||state.phase==='reaction')&&state.currentWord)playPianoNote(state.currentWord);else toast('Saca una carta para escuchar su nota.');});
+$('replayBtn').addEventListener('click',()=>{if((state.phase==='card'||state.phase==='reaction')&&state.currentWord)playPianoNote(state.currentWord);else toast(tx('Saca una carta para escuchar su nota.','請先出牌，再試聽音符。'));});
 $('practiceNotes').addEventListener('click',e=>{const b=e.target.closest('button[data-note]');if(!b)return;playPianoNote(b.dataset.note);});
-$('fullBtn').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch(e){toast('Tu navegador no permite pantalla completa.');}});
-document.addEventListener('fullscreenchange',()=>{$('fullBtn').title=document.fullscreenElement?'Salir de pantalla completa':'Pantalla completa';});
+$('fullBtn').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch(e){toast(tx('Tu navegador no permite pantalla completa.','你的瀏覽器不支援全螢幕模式。'));}});
+document.addEventListener('fullscreenchange',()=>{$('fullBtn').title=document.fullscreenElement?tx('Salir de pantalla completa','離開全螢幕'):tx('Pantalla completa','全螢幕');});
 window.addEventListener('resize',layoutSeats);
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&audioCtx&&audioCtx.state==='running')audioCtx.suspend().catch(()=>{});});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('rulesOverlay').hidden)hideRules();if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')return;if(state.phase==='setup'||!$('rulesOverlay').hidden||!$('winOverlay').hidden)return;
