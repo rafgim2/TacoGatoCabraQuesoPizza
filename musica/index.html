@@ -565,6 +565,69 @@ function relabelDefaultPlayers(){
   if(p.zone)p.zone.querySelector('.player-name').textContent=p.name;
  }
 }
+
+function syncLiveLanguage(){
+ pileText();
+ $('modeInfo').textContent=modeText();
+ if(state.phase==='setup'){
+  $('turnCaption').textContent=tx('SIGUIENTE JUGADOR','下一位玩家');
+  $('spokenWord').textContent=tx('ESCUCHA ♫','♫ 仔細聽');
+  $('status').textContent=tx('Toca tu zona para sacar la carta','點自己的區域出牌');
+  $('helptext').textContent=tx('Cuando coincidan el sonido y la carta, ¡todos tocáis vuestra zona!','聽到的音高與卡牌相同時，大家要立刻按自己的區域！');
+  $('footerInfo').textContent=tx('Pulsa tu zona cuando sea tu turno para sacar una carta.','輪到你時，請點自己的區域出牌。');
+ }else if(state.phase==='ready'){
+  const p=state.players[state.turn];
+  if(p){
+   $('turnCaption').textContent=tx('♫ TURNO DE','♫ 輪到');
+   $('spokenWord').textContent=p.name.toUpperCase();
+   $('status').textContent=tx('👆 ¡'+p.name+', toca tu zona!','👆 '+p.name+'，請點你的區域！');
+   $('helptext').textContent=tx('Los demás esperan. Solo toca el jugador señalado.','其他玩家請等待，只有輪到的人可以出牌。');
+   $('footerInfo').textContent=tx('Turno de '+p.name+': pulsa su zona para lanzar la carta.','輪到 '+p.name+'：請點自己的區域出牌。');
+  }
+ }else if(state.phase==='dealing'){
+  const p=state.players[state.dealer];
+  if(p){
+   $('turnCaption').textContent=tx('CARTA DE '+p.name.toUpperCase(),p.name+' 的卡牌');
+   $('spokenWord').textContent=tx('♫ ESCUCHA','♫ 仔細聽');
+  }
+  $('status').textContent=tx('♫ La carta viaja al centro…','♫ 卡牌正在飛向中央…');
+  $('helptext').textContent=tx('Mirad la carta cuando aparezca.','卡牌出現時，請仔細觀察。');
+ }else if(state.phase==='reaction'||state.phase==='card'){
+  $('turnCaption').textContent=tx('NOTA QUE SUENA','聽聽這個音');
+  $('status').textContent=tx('Escucha y observa','仔細聽、仔細看');
+  $('helptext').textContent=tx('¿Coinciden el sonido y la nota de la carta? ¡Atentos!','聽到的音高與卡牌上的音符相同嗎？注意！');
+ }else if(state.phase==='result'){
+  const p=state.players[state.penaltyId],fast=state.players[state.fastestId];
+  $('turnCaption').textContent=tx('CARTAS RECOGIDAS','收回卡牌');
+  if(p){
+   $('status').textContent=tx('📥 '+p.name+' recoge '+cardCount(state.penaltyCards),'📥 '+p.name+' 收下 '+state.penaltyCards+' 張牌');
+   $('footerInfo').textContent=tx(p.name+' recibe '+cardCount(state.penaltyCards)+'. Saca la siguiente carta el próximo jugador.',p.name+' 收下 '+state.penaltyCards+' 張牌。下一位玩家請出牌。');
+  }
+  $('helptext').textContent=fast?tx('🥇 '+fast.name+' fue el más rápido.','🥇 '+fast.name+' 反應最快！'):tx('Toque equivocado: recoge el montón.','按錯了：把牌堆收回。');
+ }else if(state.phase==='won'){
+  const p=state.players[state.winnerId];
+  if(p){
+   $('turnCaption').textContent=tx('🏆 ¡PARTIDA TERMINADA!','🏆 遊戲結束！');
+   $('spokenWord').textContent=p.name.toUpperCase();
+   $('status').textContent=tx('🎉 ¡'+p.name+' HA GANADO!','🎉 '+p.name+' 獲勝！');
+   $('helptext').textContent=tx('¡Ha llegado a 0 cartas!','手牌已經出完了！');
+   $('footerInfo').textContent=tx('Ganador: '+p.name+' · 0 cartas','贏家：'+p.name+' · 0 張牌');
+   $('winTitle').textContent=tx('¡'+p.name+' HA GANADO!',p.name+' 獲勝！');
+   $('winText').textContent=tx('¡Buen oído y cero cartas! La partida ha terminado.','聽力真棒！手牌清空，遊戲結束。');
+  }
+ }
+ if(state.phase==='setup'||picture.classList.contains('cover')){
+  $('cardLabel').textContent=tx('¿QUÉ NOTA ES?','這是什麼音？');
+ }else if(state.currentCard){
+  const note=TYPES[state.currentCard];
+  $('cardLabel').textContent=state.showCardName?displayNote(note):'';
+  const svg=$('cardEmoji').querySelector('svg');
+  if(svg)svg.setAttribute('aria-label',state.showCardName?tx('Nota '+displayNote(note)+' en pentagrama','五線譜上的音符 '+displayNote(note)):tx('Nota musical sin nombre','不顯示音名的音符'));
+ }
+ $('fullBtn').title=document.fullscreenElement?tx('Salir de pantalla completa','離開全螢幕'):tx('Pantalla completa','全螢幕');
+ if(state.players.length)refreshZones();
+}
+
 function applyLanguage(code){
  state.lang=code==='zh'?'zh':'es';
  document.documentElement.lang=state.lang==='zh'?'zh-TW':'es';
