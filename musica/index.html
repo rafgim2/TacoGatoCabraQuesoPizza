@@ -484,6 +484,101 @@ function setupNoteControls(){
  setMode('easy');
  refreshNotationLabels();
 }
+
+const STATIC_ZH=[
+ ['.brand small','音感配對遊戲 · 2–8 位玩家'],
+ ['#rulesBtn .optional','規則'],['#replayBtn','♫ 重播'],
+ ['#fullBtn .optional','螢幕'],['#restartBtn .optional','重開'],
+ ['#setupOverlay .modal > h2','♫ 一起玩音符！'],
+ ['#setupOverlay .modal > p.lead','聽辨音高，再和卡牌上的音符比較。2–8 位玩家可以在同一螢幕觸控遊玩，不需要連網。'],
+ ['#speedChoices [data-cards="12"]','一般 · 12 張牌'],
+ ['#speedChoices [data-cards="6"]','快速 · 6 張牌'],
+ ['#modeChoices [data-mode="hard"]','困難 · 半音階'],
+ ['#notationChoices [data-notation="american"]','C · D · E · F · G（英文字母）'],
+ ['#cardViewChoices [data-card-view="both"]','五線譜和音名'],
+ ['#cardViewChoices [data-card-view="staff"]','只顯示五線譜'],
+ ['#allNotesBtn','5 個半音階音'],['#naturalNotesBtn','5 個自然音'],
+ ['#clearNotesBtn','全部清除'],
+ ['.practice-help','試聽的音高與遊戲中相同。請調整裝置音量。'],
+ ['#startBtn','開始遊戲 ▶'],['#setupRulesBtn','查看玩法'],
+ ['#rulesOverlay h2','📖 遊戲規則'],['#closeRulesBtn','知道了 ✓'],
+ ['#winOverlay .win-subtitle','★ 遊戲結束 ★'],
+ ['#winOverlay .win-zero','🃏 0 張牌'],
+ ['#playAgainBtn','♫ 再玩一局'],['#winCloseBtn','查看最後的牌面']
+];
+const SETTINGS_ZH=[
+ '有幾位小朋友一起玩？','玩家名稱','遊戲長度','音樂難度',
+ '音符名稱顯示方式','卡牌上顯示什麼？','請選擇剛好 5 個音高','開始前先試聽音符'
+];
+const RULES_ZH=[
+ '<b>1.</b> 輪到的玩家點自己的區域，將一張牌放到中央。',
+ '<b>2.</b> 簡單模式使用 <b>DO、RE、MI、FA、SOL</b>（英文字母是 <b>C、D、E、F、G</b>）。困難模式可從 DO4 到 DO5 選擇<b>剛好 5 個不同的音高</b>，包含升降記號。可以選擇唱名或英文字母，也能設定<b>只顯示五線譜</b>，不顯示音名。遊戲不會告訴你聽到的是哪個音。',
+ '<b>3.</b> 如果<b>聲音和卡牌的音高一致</b>，所有玩家要立刻點自己的區域；最後按下或沒按的人要收回整疊牌。<b>如果只有兩位玩家，第一個按下的人就贏得本回合</b>，另一位直接收牌。音高不同時不能亂按，按錯的人要收牌。',
+ '<b>4.</b> 點<b>「♫ 重播」</b>可以再聽一次。試聽按鈕會顯示所選的音符名稱。例如 <b>DO♯ 和 RE♭</b>（英文字母 <b>C♯ 和 D♭</b>）音高相同，判斷是否相符要以聲音為準。遊戲沒有干擾聽音的背景音樂。',
+ '<b>5.</b> 收牌後，換下一位玩家出牌。<b>誰先把手牌出完就自動獲勝</b>。支援 2–8 位玩家、一般與快速模式；也可以按鍵盤上的 1–8 進行操作。',
+ '低音 DO4（261.6 Hz）到高音 DO5（523.3 Hz），兩端共有 13 個不同音高。若覺得辨認單音較難，可先按試聽鍵練習。'
+];
+const ARIA_ZH=[
+ ['#rulesBtn','title','遊戲規則'],['#replayBtn','title','再聽一次音符'],
+ ['#fullBtn','title','全螢幕'],['#restartBtn','title','重新開始'],
+ ['#board','aria-label','遊戲棋盤'],['.stage','aria-label','中央牌區'],
+ ['#setupOverlay','aria-label','遊戲設定'],['#rulesOverlay','aria-label','遊戲規則'],
+ ['#winOverlay','aria-label','遊戲結束'],
+ ['.practice','aria-label','試聽參考音'],
+ ['#noteChoices','aria-label','可選擇的半音階音符']
+];
+const originalUI=new Map();
+function updateStaticLanguage(){
+ for(const [selector,zh] of STATIC_ZH){
+  const node=document.querySelector(selector);if(!node)continue;
+  const key='html:'+selector;
+  if(!originalUI.has(key))originalUI.set(key,node.innerHTML);
+  node.innerHTML=state.lang==='zh'?zh:originalUI.get(key);
+ }
+ document.querySelectorAll('#setupOverlay .setting-title').forEach((node,i)=>{
+  const key='title:'+i;
+  if(!originalUI.has(key))originalUI.set(key,node.textContent);
+  node.textContent=state.lang==='zh'?SETTINGS_ZH[i]:originalUI.get(key);
+ });
+ document.querySelectorAll('#rulesOverlay .rules p').forEach((node,i)=>{
+  const key='rule:'+i;
+  if(!originalUI.has(key))originalUI.set(key,node.innerHTML);
+  node.innerHTML=state.lang==='zh'?RULES_ZH[i]:originalUI.get(key);
+ });
+ for(const [selector,attr,zh] of ARIA_ZH){
+  const node=document.querySelector(selector);if(!node)continue;
+  const key='attr:'+selector+':'+attr;
+  if(!originalUI.has(key))originalUI.set(key,node.getAttribute(attr)||'');
+  node.setAttribute(attr,state.lang==='zh'?zh:originalUI.get(key));
+ }
+}
+function relabelDefaultPlayers(){
+ const fields=[...$('nameFields').querySelectorAll('input')];
+ for(let i=0;i<fields.length;i++){
+  const input=fields[i],es='Jugador '+(i+1),zh='玩家'+(i+1);
+  if(input.value===es||input.value===zh)input.value=playerLabel(i);
+  input.setAttribute('aria-label',tx('Nombre del jugador ','玩家名稱 ')+(i+1));
+ }
+ for(const p of state.players){
+  const es='Jugador '+(p.id+1),zh='玩家'+(p.id+1);
+  if(p.name===es||p.name===zh)p.name=playerLabel(p.id);
+  if(p.zone)p.zone.querySelector('.player-name').textContent=p.name;
+ }
+}
+function applyLanguage(code){
+ state.lang=code==='zh'?'zh':'es';
+ document.documentElement.lang=state.lang==='zh'?'zh-TW':'es';
+ document.title=tx('DO · RE · MI · FA · SOL — Juego de oído musical','DO · RE · MI · FA · SOL — 音感配對遊戲');
+ updateStaticLanguage();
+ $('headerLangBtn').textContent=state.lang==='zh'?'ES':'中文';
+ $('headerLangBtn').title=tx('Cambiar a chino tradicional','切換成西班牙文');
+ $('headerLangBtn').setAttribute('aria-label',$('headerLangBtn').title);
+ for(const b of $('languageChoices').querySelectorAll('[data-lang]'))
+  b.classList.toggle('selected',b.dataset.lang===state.lang);
+ $('languageChoices').setAttribute('aria-label',tx('Idioma de la interfaz','介面語言'));
+ relabelDefaultPlayers();refreshNotationLabels();renderNoteChoices();syncLiveLanguage();
+}
+
 function populateSettings(){for(let n=2;n<=8;n++){const b=document.createElement('button');b.type='button';b.className='choice'+(n===state.count?' selected':'');b.textContent=n;b.dataset.num=n;$('countChoices').appendChild(b);}
  for(let i=0;i<8;i++){const l=document.createElement('label');l.className='name-field';l.innerHTML=`<span class="name-dot" style="background:${COLORS[i].main}"></span><input maxlength="16" aria-label="Nombre del jugador ${i+1}" value="Jugador ${i+1}">`;$('nameFields').appendChild(l);}showNames();}
 function showNames(){[...$('nameFields').children].forEach((e,i)=>e.hidden=i>=state.count);[...$('countChoices').children].forEach(b=>b.classList.toggle('selected',Number(b.dataset.num)===state.count));}
@@ -681,7 +776,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('rulesOverlay').
  if(/^[1-8]$/.test(e.key)){e.preventDefault();press(Number(e.key)-1);} });
 document.addEventListener('contextmenu',e=>{if(e.target.closest('.board'))e.preventDefault();});
 document.addEventListener('touchmove',e=>{if(e.target.closest('.board'))e.preventDefault();},{passive:false});
-populateSettings();setupNoteControls();
+$('headerLangBtn').addEventListener('click',()=>applyLanguage(state.lang==='es'?'zh':'es'));
+$('languageChoices').addEventListener('click',event=>{const b=event.target.closest('button[data-lang]');if(b)applyLanguage(b.dataset.lang);});
+populateSettings();setupNoteControls();applyLanguage('es');
 })();
 </script>
 </body>
