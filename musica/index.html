@@ -146,10 +146,26 @@ html,body{background:#080f26;color:#f6f9ff}
 .name-field input{color:#fff}
 .primary{background:linear-gradient(110deg,#50e5d4,#8ba6ff);color:#0c2842;box-shadow:0 5px 0 #2c5c84}
 .secondary{color:#bae4f5}
+.mode-choices{gap:9px}
+.mode-choices .choice{font-size:15px}
+.note-selection{margin-top:12px;padding:12px;background:#0f203e;border:1px solid #50678b;border-radius:15px}
+.note-selection[hidden]{display:none}
+.note-selection .setting-title{margin:2px 0 7px}
+.note-selection-info,.note-selection-count{font-size:12px;line-height:1.45;color:#bcd4ea;margin:5px 0 9px}
+.note-selection-count{font-weight:850;margin:9px 0 2px;color:#86e8e2}
+.note-tools{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0}
+.note-tools button{padding:6px 9px;border:1px solid #6885a9;border-radius:8px;background:#253e62;color:#fff;font-size:12px;font-weight:850}
+.note-choices{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+.note-choice{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;min-height:41px;border:2px solid #445979;border-radius:10px;background:#1b2b4b;color:#bed1e6;cursor:pointer;font-size:clamp(12px,1.35vw,16px);font-weight:950}
+.note-choice input{position:absolute;width:100%;height:100%;opacity:0;cursor:pointer}
+.note-choice:has(input:checked){background:linear-gradient(135deg,#376778,#3d4e92);border-color:#79e6d9;color:#fff}
+.note-choice:focus-within{outline:2px solid #fff;outline-offset:2px}
+#startBtn:disabled{opacity:.4;cursor:not-allowed}
+@media(max-width:680px){.note-choices{grid-template-columns:repeat(4,minmax(0,1fr))}.note-choice{font-size:12px;min-height:38px}}
 .practice{margin:12px 0;padding:11px;background:#0e1e3e;border:1px solid #40567c;border-radius:15px}
 .practice .setting-title{text-align:center;margin:2px 0 8px}
-.practice-notes{display:flex;gap:7px;justify-content:center}
-.practice-notes button{flex:1;min-height:46px;min-width:0;border:2px solid #9eccef;border-radius:10px;background:linear-gradient(150deg,#f8fdff,#cfe9ff);color:#172c4c;font-weight:1000}
+.practice-notes{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.practice-notes button{flex:1 1 49px;min-height:43px;min-width:45px;border:2px solid #9eccef;border-radius:10px;background:linear-gradient(150deg,#f8fdff,#cfe9ff);color:#172c4c;font-weight:1000}
 .practice-notes button:active{transform:translateY(3px)}
 .practice-help{color:#adc5e4;font-size:12px;text-align:center;margin:7px 0 0}
 .rules p{color:#e8f4ff;line-height:1.5}
@@ -194,7 +210,7 @@ html,body{background:#080f26;color:#f6f9ff}
   </section>
 
  </main>
- <footer class="bottom"><span id="footerInfo">Pulsa tu zona cuando sea tu turno para sacar una carta.</span><span class="pill" id="modeInfo">Escucha · Compara · Toca</span></footer>
+ <footer class="bottom"><span id="footerInfo">Pulsa tu zona cuando sea tu turno para sacar una carta.</span><span class="pill" id="modeInfo">Sencillo · DO–SOL</span></footer>
 </div>
 <div class="overlay" id="setupOverlay" role="dialog" aria-modal="true" aria-label="Preparar partida">
  <div class="modal">
@@ -206,7 +222,23 @@ html,body{background:#080f26;color:#f6f9ff}
   <div class="name-fields" id="nameFields"></div>
   <div class="setting-title">Duración de la partida</div>
   <div class="choices" id="speedChoices"><button class="choice selected" type="button" data-cards="12">Normal · 12 cartas</button><button class="choice" type="button" data-cards="6">Rápida · 6 cartas</button></div>
-  <div class="practice" aria-label="Escuchar notas de referencia"><div class="setting-title">Escucha las notas antes de jugar</div><div class="practice-notes" id="practiceNotes"><button type="button" data-note="DO">DO</button><button type="button" data-note="RE">RE</button><button type="button" data-note="MI">MI</button><button type="button" data-note="FA">FA</button><button type="button" data-note="SOL">SOL</button></div><p class="practice-help">Las notas suenan igual que durante el juego. Activa el volumen del dispositivo.</p></div>
+  <div class="setting-title">Nivel musical</div>
+   <div class="choices mode-choices" id="modeChoices">
+    <button class="choice selected" type="button" data-mode="easy">Sencillo · DO a SOL</button>
+    <button class="choice" type="button" data-mode="hard">Difícil · Cromático</button>
+   </div>
+   <div class="note-selection" id="noteSelection" hidden>
+    <div class="setting-title">Elige las notas que quieres escuchar</div>
+    <p class="note-selection-info">De DO4 a DO5: 12 semitonos y el DO agudo. Los sostenidos y los bemoles se pueden marcar por separado; los enarmónicos suenan igual, pero se escriben en distinta posición.</p>
+    <div class="note-tools">
+     <button type="button" id="allNotesBtn">Todas</button>
+     <button type="button" id="naturalNotesBtn">Solo naturales</button>
+     <button type="button" id="clearNotesBtn">Quitar todas</button>
+    </div>
+    <div class="note-choices" id="noteChoices" aria-label="Notas cromáticas seleccionables"></div>
+    <p class="note-selection-count" id="noteCount" aria-live="polite"></p>
+   </div>
+   <div class="practice" aria-label="Escuchar notas de referencia"><div class="setting-title">Escucha las notas antes de jugar</div><div class="practice-notes" id="practiceNotes"></div><p class="practice-help">Se oyen las mismas alturas que durante la partida. Ajusta el volumen del dispositivo.</p></div>
   <button class="primary" id="startBtn" type="button">¡EMPEZAR PARTIDA! ▶</button>
   <button class="secondary" id="setupRulesBtn" type="button">Ver cómo se juega</button>
  </div>
@@ -215,11 +247,11 @@ html,body{background:#080f26;color:#f6f9ff}
  <div class="modal"><h2>📖 Cómo se juega</h2>
  <div class="rules">
   <p><b>1.</b> El jugador al que le toca pulsa su zona para lanzar una carta al centro.</p>
-  <p><b>2.</b> La carta enseña <b>DO, RE, MI, FA o SOL</b>, escrita y en el pentagrama. Al aparecer, suena una nota de piano. La pantalla <b>no revela el nombre de la nota que suena</b>: debéis reconocerla de oído.</p>
+  <p><b>2.</b> En el modo sencillo aparecen <b>DO, RE, MI, FA y SOL</b>. En el difícil puedes seleccionar notas cromáticas de <b>DO4 a DO5</b>, incluyendo sostenidos y bemoles. Se muestran en un pentagrama sin símbolo de clave, pero con las posiciones de clave de sol y las alteraciones junto a la nota. Al aparecer la carta suena un piano; el nombre del sonido permanece oculto.</p>
   <p><b>3.</b> Si <b>el sonido coincide con la carta</b>, todos tocan rápidamente su propia zona. El último en tocar —o quien no toque— recoge el montón. Si <b>no coinciden</b>, no hay que tocar: quien se precipite recoge las cartas.</p>
-  <p><b>4.</b> Puedes usar <b>«♫ Repetir»</b> para oír otra vez el sonido. Antes de jugar, los cinco botones de referencia permiten familiarizarse con sus alturas. No hay música de fondo que interfiera.</p>
+  <p><b>4.</b> Usa <b>«♫ Repetir»</b> para oír otra vez el sonido. Los botones de práctica reflejan las notas elegidas. <b>DO♯ y RE♭</b>, por ejemplo, tienen la misma altura: la coincidencia se decide por el sonido, no por el nombre escrito. No hay música de fondo que interfiera.</p>
   <p><b>5.</b> Tras recoger cartas, sigue el siguiente jugador. <b>Gana automáticamente</b> el primero que se queda sin cartas. Hay partidas normales y rápidas de 2 a 8 jugadores. También se puede tocar usando las teclas 1–8.</p>
-  <p>Reconocer notas aisladas sin una referencia tonal puede resultar difícil: practica primero escuchando DO, RE, MI, FA y SOL.</p>
+  <p>Do grave = DO4 (261,6 Hz), do agudo = DO5 (523,3 Hz): hay 12 intervalos de semitono entre ambos y 13 alturas contando los dos extremos. Para identificar alturas absolutas, prueba primero los botones de práctica.</p>
  </div>
  <button class="primary" type="button" id="closeRulesBtn">ENTENDIDO ✓</button></div>
 </div>
@@ -232,8 +264,33 @@ html,body{background:#080f26;color:#f6f9ff}
 <script>
 (() => {
 'use strict';
-const WORDS=['DO','RE','MI','FA','SOL'];
-const TYPES={do:{word:'DO'},re:{word:'RE'},mi:{word:'MI'},fa:{word:'FA'},sol:{word:'SOL'}};
+
+const EASY_IDS=['do','re','mi','fa','sol'];
+// Enarmonía: mismo MIDI, pero posición y alteración escrita diferentes.
+// Posiciones verticales exactas en un pentagrama cuya línea inferior (MI4) es y=118.
+const NOTE_LIST=[
+ {id:'do',word:'DO',midi:60,y:142},
+ {id:'dos',word:'DO♯',midi:61,y:142,acc:'sharp'},
+ {id:'reb',word:'RE♭',midi:61,y:130,acc:'flat'},
+ {id:'re',word:'RE',midi:62,y:130},
+ {id:'res',word:'RE♯',midi:63,y:130,acc:'sharp'},
+ {id:'mib',word:'MI♭',midi:63,y:118,acc:'flat'},
+ {id:'mi',word:'MI',midi:64,y:118},
+ {id:'fa',word:'FA',midi:65,y:106},
+ {id:'fas',word:'FA♯',midi:66,y:106,acc:'sharp'},
+ {id:'solb',word:'SOL♭',midi:66,y:94,acc:'flat'},
+ {id:'sol',word:'SOL',midi:67,y:94},
+ {id:'sols',word:'SOL♯',midi:68,y:94,acc:'sharp'},
+ {id:'lab',word:'LA♭',midi:68,y:82,acc:'flat'},
+ {id:'la',word:'LA',midi:69,y:82},
+ {id:'las',word:'LA♯',midi:70,y:82,acc:'sharp'},
+ {id:'sib',word:'SI♭',midi:70,y:70,acc:'flat'},
+ {id:'si',word:'SI',midi:71,y:70},
+ {id:'do5',word:'DO⁵',midi:72,y:58}
+];
+const TYPES=Object.fromEntries(NOTE_LIST.map(n=>[n.id,n]));
+const ALL_IDS=NOTE_LIST.map(n=>n.id);
+const getPool=()=>state.mode==='hard'?NOTE_LIST.filter(n=>state.selectedNotes.includes(n.id)):EASY_IDS.map(id=>TYPES[id]);
 const COLORS=[
  {main:'#7f87ff',light:'#242a57'},{main:'#42e5d6',light:'#114e57'},
  {main:'#ffb46f',light:'#5d3d28'},{main:'#c7e97d',light:'#435027'},
@@ -244,16 +301,16 @@ const RACE_MS=7000, RESULT_MS=1450, NON_MATCH_MS=2250, DEAL_MS=690;
 const $=id=>document.getElementById(id);
 const board=$('board'),zones=$('playerZones'),picture=$('pictureCard');
 const state={count:4,cards:12,players:[],pile:[],turn:0,wordIndex:0,phase:'setup',currentCard:null,currentWord:'',dealer:0,
- responses:new Map(),roundStart:0,roundTimeout:0,raf:0,resultTimer:0,waitInterval:0,extraTimers:[],special:false,voice:false,sound:false,music:false,animationId:0,penaltyId:-1,fastestId:-1,penaltyCards:0,winnerId:-1};
+ responses:new Map(),roundStart:0,roundTimeout:0,raf:0,resultTimer:0,waitInterval:0,extraTimers:[],mode:'easy',selectedNotes:ALL_IDS.slice(),notePool:[],special:false,voice:false,sound:false,music:false,animationId:0,penaltyId:-1,fastestId:-1,penaltyCards:0,winnerId:-1};
 let audioCtx=null,toastTimer=0;
 const prefersReduced=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function shuffle(items){const a=items.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function buildDeck(){const deck=[];for(const type of WORDS)for(let j=0;j<12;j++)deck.push(type.toLowerCase());return shuffle(deck);}
+function buildDeck(){const ids=state.notePool.map(n=>n.id);const deck=[];const n=Math.max(72,state.count*state.cards);for(let i=0;i<n;i++)deck.push(ids[i%ids.length]);return shuffle(deck);}
 function overlay(id,visible){$(id).hidden=!visible;}
 function t(fn,delay){const id=setTimeout(()=>{state.extraTimers=state.extraTimers.filter(x=>x!==id);fn();},delay);state.extraTimers.push(id);return id;}
 function resetClocks(){clearTimeout(state.roundTimeout);clearTimeout(state.resultTimer);clearInterval(state.waitInterval);cancelAnimationFrame(state.raf);state.extraTimers.forEach(clearTimeout);state.extraTimers=[];document.querySelectorAll('.fly-card').forEach(el=>el.remove());$('progress').style.display='none';}
 function toast(text,ms=1400){$('toast').textContent=text;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),ms);}
-const PITCH={DO:261.63,RE:293.66,MI:329.63,FA:349.23,SOL:392.00};
+// Las frecuencias se calculan por igual temperamento desde LA4 = 440 Hz.
 function initAudio(){
  try{if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;audioCtx=new AC();}
  if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});return true;}catch(e){return false;}
@@ -262,9 +319,9 @@ function initAudio(){
 // Piano sintético cálido: varias cuerdas armónicas ligeramente desafinadas,
 // ataque percutivo breve y cola natural. Sin archivos ni conexión.
 function playPianoNote(note,offset=0,duration=1.55){
- if(!PITCH[note]||!initAudio())return;
+ const entry=TYPES[note];if(!entry||!initAudio())return;
  const start=audioCtx.currentTime+.03+offset;
- const base=PITCH[note];
+ const base=440*Math.pow(2,(entry.midi-69)/12);
  const end=start+Math.max(.45,duration);
  // El brillo de las frecuencias altas decae más deprisa que el fundamental.
  const partials=[
@@ -303,7 +360,55 @@ function playPianoNote(note,offset=0,duration=1.55){
 function tone(){} // Sin efectos que confundan la audición.
 function musicStop(){}
 function stopVictory(){}
-function playVictoryFanfare(){['DO','MI','SOL','MI','FA','SOL','DO'].forEach((note,i)=>playPianoNote(note,i*.18,i===6?1:.32));}
+function playVictoryFanfare(){['do','mi','sol','mi','fa','sol','do5'].forEach((note,i)=>playPianoNote(note,i*.18,i===6?1:.32));}
+
+function renderNoteChoices(){
+ const wrap=$('noteChoices');wrap.replaceChildren();
+ for(const note of NOTE_LIST){
+  const label=document.createElement('label');
+  label.className='note-choice';
+  const input=document.createElement('input');
+  input.type='checkbox';input.value=note.id;input.checked=state.selectedNotes.includes(note.id);
+  const span=document.createElement('span');span.textContent=note.word;
+  label.append(input,span);wrap.appendChild(label);
+ }
+ const count=getPool();
+ const distinct=new Set(count.map(n=>n.midi)).size;
+ $('noteCount').textContent=state.selectedNotes.length+' grafías seleccionadas · '+distinct+' alturas distintas';
+ $('startBtn').disabled=state.mode==='hard'&&distinct<2;
+ renderPractice();
+}
+function renderPractice(){
+ const wrap=$('practiceNotes');wrap.replaceChildren();
+ for(const note of getPool()){
+  const b=document.createElement('button');b.type='button';b.dataset.note=note.id;b.textContent=note.word;
+  b.title='Escuchar '+note.word;wrap.appendChild(b);
+ }
+ if(!wrap.children.length)wrap.textContent='Selecciona notas arriba para escucharlas.';
+}
+function setMode(mode){
+ state.mode=mode==='hard'?'hard':'easy';
+ $('noteSelection').hidden=state.mode!=='hard';
+ for(const b of $('modeChoices').querySelectorAll('[data-mode]'))
+  b.classList.toggle('selected',b.dataset.mode===state.mode);
+ renderNoteChoices();
+}
+function changeSelected(ids){state.selectedNotes=ids.slice();renderNoteChoices();}
+function setupNoteControls(){
+ $('modeChoices').addEventListener('click',event=>{
+  const btn=event.target.closest('[data-mode]');if(btn)setMode(btn.dataset.mode);
+ });
+ $('noteChoices').addEventListener('change',event=>{
+  const input=event.target.closest('input[type=checkbox]');if(!input)return;
+  if(input.checked){if(!state.selectedNotes.includes(input.value))state.selectedNotes.push(input.value);}
+  else state.selectedNotes=state.selectedNotes.filter(id=>id!==input.value);
+  renderNoteChoices();
+ });
+ $('allNotesBtn').addEventListener('click',()=>changeSelected(ALL_IDS));
+ $('naturalNotesBtn').addEventListener('click',()=>changeSelected(NOTE_LIST.filter(n=>!n.acc).map(n=>n.id)));
+ $('clearNotesBtn').addEventListener('click',()=>changeSelected([]));
+ setMode('easy');
+}
 function populateSettings(){for(let n=2;n<=8;n++){const b=document.createElement('button');b.type='button';b.className='choice'+(n===state.count?' selected':'');b.textContent=n;b.dataset.num=n;$('countChoices').appendChild(b);}
  for(let i=0;i<8;i++){const l=document.createElement('label');l.className='name-field';l.innerHTML=`<span class="name-dot" style="background:${COLORS[i].main}"></span><input maxlength="16" aria-label="Nombre del jugador ${i+1}" value="Jugador ${i+1}">`;$('nameFields').appendChild(l);}showNames();}
 function showNames(){[...$('nameFields').children].forEach((e,i)=>e.hidden=i>=state.count);[...$('countChoices').children].forEach(b=>b.classList.toggle('selected',Number(b.dataset.num)===state.count));}
@@ -340,38 +445,43 @@ function refreshZones(){board.classList.toggle('awaiting-draw',state.phase==='re
 function showNextTurn(){if(state.phase==='won')return;
  const empty=state.players.find(p=>p.hand.length===0);if(empty){declareWinner(empty.id);return;}
  const next=nextActive(state.turn);if(next<0)return;state.turn=next;state.phase='ready';state.penaltyId=-1;state.fastestId=-1;board.style.setProperty('--turn-color',state.players[next].color.main);$('turnCaption').textContent='♫ TURNO DE';$('spokenWord').textContent=state.players[next].name.toUpperCase();$('status').textContent=`👆 ¡${state.players[next].name}, toca tu zona!`;$('status').className='status';$('helptext').textContent='Los demás esperan. Solo toca el jugador señalado.';$('footerInfo').textContent=`Turno de ${state.players[next].name}: pulsa su zona para lanzar la carta.`;refreshZones();}
-// Partitura SVG vectorial precisa. Clave de sol: las líneas (de arriba a abajo)
- // son FA5, RE5, SI4, SOL4 y MI4; las posiciones intermedias son espacios.
- // Distancia entre líneas: 24 unidades; entre notas contiguas: 12 unidades.
-const STAFF={do:{y:142,ledger:true},re:{y:130,ledger:false},
-             mi:{y:118,ledger:false},fa:{y:106,ledger:false},
-             sol:{y:94,ledger:false}};
+// Partitura vectorial sin clave dibujada: referencia de clave de SOL.
+// Líneas: y=22 FA5 · 46 RE5 · 70 SI4 · 94 SOL4 · 118 MI4.
+// Cada espacio o línea contigua cambia 12 unidades de y (un grado diatónico).
 function showCard(type){
- const note=STAFF[type];
- if(!note)return;
- picture.className='picture-card';
- picture.dataset.type=type;
+ const note=TYPES[type];if(!note)return;
+ picture.className='picture-card';picture.dataset.type=type;
  picture.classList.add('pop');
- const x=149, y=note.y;
- // Cada cabeza de nota está centrada matemáticamente en su línea o espacio.
- // DO4: línea adicional a y=142 · RE4: espacio y=130 · MI4: línea y=118
- // FA4: espacio y=106 · SOL4: línea y=94.
- const lines=[22,46,70,94,118].map(py=>
-   '<line x1="52" x2="221" y1="'+py+'" y2="'+py+'" />'
- ).join('');
- const ledger=note.ledger?
-   '<line x1="'+(x-25)+'" x2="'+(x+25)+'" y1="'+y+'" y2="'+y+'" stroke="#182e50" stroke-width="2.8"/>':'';
- const name=TYPES[type].word;
- $('cardEmoji').innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 165" aria-label="'+name+' en clave de sol" role="img">'+
-  '<g stroke="#47628a" stroke-width="2.4" stroke-linecap="round">'+lines+'</g>'+
-  // Clave de sol dibujada a escala para no depender de las fuentes del dispositivo.
-  '<path d="M84 115 C49 109 55 79 75 70 C96 60 103 41 96 22 C90 6 77 14 74 30 C69 55 85 75 94 97 C110 131 96 148 82 147 C73 147 69 139 74 134 C79 129 86 137 83 142" fill="none" stroke="#203657" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>'+
-  '<path d="M92 22 C91 46 84 62 80 79 L72 137" fill="none" stroke="#203657" stroke-width="3.3" stroke-linecap="round"/>'+
-  ledger+
-  '<ellipse cx="'+x+'" cy="'+y+'" rx="16" ry="10.5" transform="rotate(-18 '+x+' '+y+')" fill="#152c4d"/>'+
-  '<line x1="'+(x+14)+'" y1="'+(y-3)+'" x2="'+(x+14)+'" y2="'+(y-55)+'" stroke="#152c4d" stroke-width="4.2" stroke-linecap="round"/>'+
+ const x=152,y=note.y;
+ const lines=[22,46,70,94,118].map(yy=>
+  '<line x1="18" y1="'+yy+'" x2="225" y2="'+yy+'" />').join('');
+ const ledger=y>=142?
+  '<line x1="'+(x-26)+'" y1="142" x2="'+(x+26)+'" y2="142" stroke="#182e50" stroke-width="2.8" />':'';
+ let accidental='';
+ // Alteraciones musicales vectoriales, a la IZQUIERDA de la cabeza.
+ // Las líneas horizontales del sostenido cruzan la altura de la nota.
+ if(note.acc==='sharp'){
+  const ax=x-42;
+  accidental='<g stroke="#182e50" fill="none" stroke-linecap="round">'+
+   '<path d="M'+(ax-8)+' '+(y-25)+' L'+(ax-8)+' '+(y+23)+' M'+(ax+6)+' '+(y-27)+' L'+(ax+6)+' '+(y+21)+'" stroke-width="2.5" />'+
+   '<path d="M'+(ax-15)+' '+(y-7)+' L'+(ax+12)+' '+(y-12)+' M'+(ax-15)+' '+(y+9)+' L'+(ax+12)+' '+(y+4)+'" stroke-width="4" />'+
+   '</g>';
+ }else if(note.acc==='flat'){
+  const bx=x-45;
+  accidental='<path d="M'+bx+' '+(y-33)+' L'+bx+' '+(y+13)+
+   ' C'+(bx+11)+' '+(y+11)+' '+(bx+22)+' '+(y+2)+' '+(bx+20)+' '+(y-7)+
+   ' C'+(bx+19)+' '+(y-20)+' '+(bx+5)+' '+(y-15)+' '+bx+' '+(y-9)+
+   '" fill="none" stroke="#182e50" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>';
+ }
+ const name=note.word.replace('⁵',' (agudo)');
+ $('cardEmoji').innerHTML=
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 166" role="img" aria-label="'+name+' en pentagrama (referencia de clave de sol)">'+
+  '<g stroke="#557090" stroke-width="2.2" stroke-linecap="round">'+lines+'</g>'+
+  ledger+accidental+
+  '<ellipse cx="'+x+'" cy="'+y+'" rx="15.5" ry="10" transform="rotate(-18 '+x+' '+y+')" fill="#182e50"/>'+
+  '<line x1="'+(x+13.5)+'" y1="'+(y-3)+'" x2="'+(x+13.5)+'" y2="'+(y-53)+'" stroke="#182e50" stroke-width="4" stroke-linecap="round"/>'+
   '</svg>';
- $('cardLabel').textContent=name;
+ $('cardLabel').textContent=note.word;
 }
 function pileText(){$('pileCount').textContent=`Montón: ${state.pile.length} carta${state.pile.length===1?'':'s'}`;}
 function animateDeal(index,onFinish){const rect=state.players[index].zone.getBoundingClientRect(),target=$('cardStack').getBoundingClientRect();
@@ -399,13 +509,21 @@ function press(id){if(state.phase==='setup'||state.phase==='dealing'||state.phas
  if(state.responses.size===state.players.length)finishRace();else refreshZones();return;}
 }
 function flipFrom(id){resetClocks();const p=state.players[id];if(!p.hand.length){state.turn=(id+1)%state.players.length;showNextTurn();return;}
- const type=p.hand.shift(),spoken=WORDS[Math.floor(Math.random()*WORDS.length)];state.currentCard=type;state.currentWord=spoken;state.dealer=id;state.wordIndex=(state.wordIndex+1)%WORDS.length;
+ const type=p.hand.shift();
+ const pitch=TYPES[type].midi;
+ const matches=state.notePool.filter(n=>n.midi===pitch);
+ const different=state.notePool.filter(n=>n.midi!==pitch);
+ // La probabilidad de coincidencia se mantiene cerca de una entre cinco.
+ // Dos grafías enarmónicas cuentan como una coincidencia auditiva.
+ const candidates=(!different.length||Math.random()<.20)?matches:different;
+ const spoken=candidates[Math.floor(Math.random()*candidates.length)].id;
+ state.currentCard=type;state.currentWord=spoken;state.dealer=id;
  state.turn=(id+1)%state.players.length;state.pile.push(type);state.phase='dealing';const isLastCard=p.hand.length===0;
  $('turnCaption').textContent=`CARTA DE ${p.name.toUpperCase()}`;$('spokenWord').textContent='♫ ESCUCHA';$('status').textContent='♫ La carta viaja al centro…';$('status').className='status';$('helptext').textContent='Mirad la carta cuando aparezca.';pileText();refreshZones();tone(365,.10,'triangle',.045);
  const animID=++state.animationId;animateDeal(id,()=>{if(animID!==state.animationId||state.phase!=='dealing')return;showCard(type);playPianoNote(spoken);
  // Al revelar la última carta se termina la partida automáticamente.
  if(isLastCard){declareWinner(id);return;}
- const match=TYPES[type].word===spoken, special=false;
+ const match=TYPES[type].midi===TYPES[spoken].midi, special=false;
  // El juego NO da pistas cuando hay coincidencia: misma pantalla, texto y sonido.
  $('turnCaption').textContent='NOTA QUE SUENA';
  $('status').textContent='Escucha y observa';$('status').className='status';
@@ -467,9 +585,9 @@ function declareWinner(id){if(state.phase==='won')return;
  $('winText').textContent='¡Buen oído y cero cartas! La partida ha terminado.';
  refreshZones();makeConfetti();overlay('winOverlay',true);playVictoryFanfare();
 }
-function initGame(){resetClocks();stopVictory();++state.animationId;state.special=false;state.voice=false;state.music=false;musicStop();createPlayers();state.pile=[];state.turn=0;state.wordIndex=0;state.phase='ready';state.currentCard=null;state.winnerId=-1;
+function initGame(){state.notePool=getPool();if(new Set(state.notePool.map(n=>n.midi)).size<2){toast('Selecciona al menos dos alturas distintas.',2200);return;}resetClocks();stopVictory();++state.animationId;state.special=false;state.voice=false;state.music=false;musicStop();createPlayers();state.pile=[];state.turn=0;state.wordIndex=0;state.phase='ready';state.currentCard=null;state.winnerId=-1;
  picture.className='picture-card cover';picture.removeAttribute('data-type');$('cardEmoji').textContent='♫';$('cardLabel').textContent='¿QUÉ NOTA ES?';pileText();overlay('setupOverlay',false);overlay('winOverlay',false);
- renderPlayers();showNextTurn();initAudio();}
+ renderPlayers();showNextTurn();$('modeInfo').textContent=state.mode==='hard'?'Difícil · '+state.notePool.length+' grafías':'Sencillo · DO–SOL';initAudio();}
 function newGameSetup(){resetClocks();stopVictory();++state.animationId;musicStop();state.phase='setup';overlay('winOverlay',false);overlay('setupOverlay',true);}
 function showRules(){overlay('rulesOverlay',true);}function hideRules(){overlay('rulesOverlay',false);}
 $('countChoices').addEventListener('click',e=>{const b=e.target.closest('button[data-num]');if(!b)return;state.count=Number(b.dataset.num);showNames();});
@@ -486,7 +604,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('rulesOverlay').
  if(/^[1-8]$/.test(e.key)){e.preventDefault();press(Number(e.key)-1);} });
 document.addEventListener('contextmenu',e=>{if(e.target.closest('.board'))e.preventDefault();});
 document.addEventListener('touchmove',e=>{if(e.target.closest('.board'))e.preventDefault();},{passive:false});
-populateSettings();
+populateSettings();setupNoteControls();
 })();
 </script>
 </body>
